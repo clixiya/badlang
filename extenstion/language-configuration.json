@@ -1,0 +1,27 @@
+{
+  "brackets": [
+    ["{", "}"],
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    { "open": "{", "close": "}" },
+    { "open": "(", "close": ")" },
+    { "open": "\"", "close": "\"", "notIn": ["string", "comment"] }
+  ],
+  "surroundingPairs": [
+    ["{", "}"],
+    ["(", ")"],
+    ["\"", "\""]
+  ],
+  "folding": {
+    "markers": {
+      "start": "^\\s*(group|test|before_all|before_each|after_each|after_all|on_error|on_assertion_error|on_network_error|before_url|after_url|on_url_error|if|else_if|else|request|req|template)\\b.*\\{\\s*$",
+      "end": "^\\s*\\}\\s*$"
+    }
+  },
+  "indentationRules": {
+    "increaseIndentPattern": "^.*\\{[^}]*$",
+    "decreaseIndentPattern": "^\\s*\\}.*$"
+  },
+  "wordPattern": "[A-Za-z_][A-Za-z0-9_]*|[A-Z]+|\"[^\"\\n]*\""
+}

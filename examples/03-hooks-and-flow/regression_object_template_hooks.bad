@@ -1,0 +1,73 @@
+# File: regression_object_template_hooks.bad
+# Author: clixiya
+# Purpose: Regression suite for object variables, template reuse, and URL hooks.
+# Flow:
+# - Start suite timer.
+# - Execute a post template with object merge.
+# - Execute a stable user read to validate mixed-flow behavior.
+# - Print total suite duration.
+# Features:
+# - before_all/after_all timers
+# - object spread + body_merge
+# - URL hook instrumentation
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+let regression_headers = {
+  Accept: "application/json"
+  Content-Type: "application/json"
+  X-Scenario: "regression"
+}
+
+let regression_payload = {
+  title: "regression-title"
+  body: "regression-body"
+  userId: 1
+}
+
+request regression_post {
+  method POST
+  path "/posts"
+  header regression_headers
+  body regression_payload
+  expect status in [201, 200]
+}
+
+before_all {
+  time_start regression_suite
+}
+
+after_all {
+  time_stop regression_suite
+  print time regression_suite
+}
+
+before_url "*/posts*" {
+  print "regression: before posts"
+}
+
+after_url "*/posts*" {
+  print "regression: after posts"
+}
+
+group "regression object template hooks" {
+  test "post template regression" {
+    send req regression_post with {
+      body_merge true
+      body {
+        regression_payload
+        title: "regression-override"
+      }
+    }
+
+    expect status in [201, 200]
+    expect json.id exists
+    expect json.title == "regression-override"
+  }
+
+  test "follow-up stable user read" {
+    send GET "/users/1"
+    expect status 200
+    expect json.id == 1
+  }
+}

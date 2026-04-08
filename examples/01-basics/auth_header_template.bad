@@ -1,0 +1,43 @@
+# File: auth_header_template.bad
+# Author: clixiya
+# Purpose: Show a simulated auth flow using reusable headers in a request template.
+# Flow:
+# - Define an auth header variable.
+# - Reuse it in a request template.
+# - Execute the template in tests.
+# Features:
+# - let variables
+# - request template + send req
+# - header blocks with shared values
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+let auth_header = "Bearer demo-token"
+
+request read_profile {
+  method GET
+  path "/users/1"
+  header {
+    Authorization: auth_header
+    Accept: "application/json"
+  }
+  expect status 200
+}
+
+test "authenticated profile style call" {
+  send req read_profile
+  expect status 200
+  expect json.id == 1
+}
+
+test "auth header reused on todo" {
+  send GET "/todos/1" {
+    header {
+      Authorization: auth_header
+      Accept: "application/json"
+    }
+  }
+
+  expect status 200
+  expect json.id == 1
+}

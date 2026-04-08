@@ -1,0 +1,33 @@
+# File: skip_with_reason_controls.bad
+# Author: clixiya
+# Purpose: Demonstrate explicit skip reasons for tests and groups.
+# Flow:
+# - Skip one test with a clear reason.
+# - Skip one whole group with a clear reason.
+# - Run active smoke tests that still pass.
+# Features:
+# - skip test ... because ...
+# - skip group ... because ...
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+skip test "temporarily parked test" because "demonstration of skip reason"
+
+skip group "legacy scenarios" because "not part of smoke set" {
+  test "legacy endpoint pattern" {
+    send GET "/users/9"
+    expect status 200
+  }
+}
+
+test "active user smoke" {
+  send GET "/users/1"
+  expect status 200
+  expect json.id == 1
+}
+
+test "active todo smoke" {
+  send GET "/todos/1"
+  expect status 200
+  expect json.id == 1
+}

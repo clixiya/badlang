@@ -1,0 +1,45 @@
+# File: quick_start_demo.bad
+# Author: clixiya
+# Purpose: First-run BAD walkthrough with direct requests and assertions.
+# Flow:
+# - Read a user profile.
+# - Read a todo item.
+# - Create a post payload.
+# Features:
+# - send GET/POST
+# - expect status and JSON path assertions
+# - body and header blocks
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+test "read user profile" {
+  send GET "/users/1"
+  expect status 200
+  expect json.id == 1
+  expect json.username == "Bret"
+}
+
+test "read todo item" {
+  send GET "/todos/1"
+  expect status 200
+  expect json.id == 1
+  expect json.completed == false
+}
+
+test "create post sample" {
+  send POST "/posts" {
+    header {
+      Content-Type: "application/json"
+      Accept: "application/json"
+    }
+    body {
+      title: "demo title"
+      body: "demo body"
+      userId: 1
+    }
+  }
+
+  expect status in [201, 200]
+  expect json.id exists
+  expect json.title == "demo title"
+}

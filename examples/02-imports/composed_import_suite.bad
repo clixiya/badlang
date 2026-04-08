@@ -1,0 +1,37 @@
+# File: composed_import_suite.bad
+# Author: clixiya
+# Purpose: Compose one suite from multiple imported modules.
+# Flow:
+# - Import shared profile template.
+# - Import todo template with alias.
+# - Run grouped tests that prove cross-file composition.
+# Features:
+# - multi-import suite design
+# - template aliasing in suite context
+# - grouped assertions
+
+import "examples/02-imports/shared_exports.bad" only shared_user_path, shared_user
+import "examples/02-imports/reusable_templates.bad" only todo_path, load_todo as suite_todo
+
+group "composed suite" {
+  test "user template from shared module" {
+    send req shared_user
+    expect status 200
+    expect json.id == 1
+  }
+
+  test "todo template from aliased import" {
+    send req suite_todo
+    expect status 200
+    expect json.id == 1
+  }
+
+  test "override imported user template path" {
+    send req shared_user with {
+      path "/users/2"
+    }
+
+    expect status 200
+    expect json.id == 2
+  }
+}

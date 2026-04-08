@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="bad - A CLI-first API testing DSL written in C. Human-readable tests, hooks, imports, retries, and runtime controls." />
+  <title>bad - API Testing DSL</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/home.css" />
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="hero-glow"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <div class="heart"><i class="ri-terminal-box-fill logo-icon"></i></div>
+      bad
+    </a>
+    <button id="nav-toggle" class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+      <i class="ri-menu-line"></i>
+    </button>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#syntax">Syntax</a></li>
+      <li><a href="#extension">Extension</a></li>
+      <li><a href="playground.html">Playground</a></li>
+      <li><a href="docs.html">Docs</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="docs.html" class="btn-ghost">Documentation</a>
+      <a href="playground.html" class="btn-primary"><i class="ri-flask-line"></i> Try Playground</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge"><i class="ri-fire-fill"></i> v1.1 - CLI-first API testing in C</div>
+    <h1 class="hero-title">
+      Test APIs in<br />
+      <span class="line2">plain English.</span>
+    </h1>
+    <p class="hero-sub">
+      <strong>bad</strong> is a compact testing DSL for HTTP APIs. Write readable tests with requests,
+      assertions, hooks, variables, groups, and imports - then run them fast from your terminal.
+    </p>
+    <div class="hero-actions">
+      <a href="docs.html#install" class="btn-hero"><i class="ri-book-open-line"></i> Read the Docs</a>
+      <a href="playground.html" class="btn-hero-ghost"><i class="ri-code-box-line"></i> Open Playground</a>
+      <a href="docs.html#quickstart" class="btn-hero-ghost"><i class="ri-rocket-line"></i> Quick Start</a>
+    </div>
+    <p class="hero-note">Open source · macOS, Linux, Windows · Built for fast feedback loops</p>
+  </section>
+
+  <div class="terminal-strip">
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="t-dot r"></div>
+        <div class="t-dot y"></div>
+        <div class="t-dot g"></div>
+        <span class="t-label">quick_start_demo.bad</span>
+        <span class="t-online">ready</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># smoke test</span></div>
+        <div><span class="t-kw">test</span> <span class="t-str">"get user"</span> {</div>
+        <div>&nbsp;&nbsp;<span class="t-kw">send</span> <span class="t-kw">GET</span> <span class="t-str">"/users/1"</span></div>
+        <div>&nbsp;&nbsp;<span class="t-kw">expect</span> status <span class="t-num">200</span></div>
+        <div>&nbsp;&nbsp;<span class="t-kw">expect</span> json.id == <span class="t-num">1</span></div>
+        <div>&nbsp;&nbsp;<span class="t-kw">expect</span> json.email <span class="t-kw">exists</span></div>
+        <div>}</div>
+        <div>&nbsp;</div>
+        <div><span class="t-out">PASS  test "get user" (3/3 assertions)</span></div>
+        <div><span class="t-out">1 test · 3 assertions · 118ms</span></div>
+        <div><span class="t-prompt">$</span> <span class="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="quickstart" id="quickstart">
+    <div class="section-header">Quick Start</div>
+    <h2 class="section-title">Run Your First Suite in <span>Under a Minute</span></h2>
+    <p class="section-desc">Build and run instantly. Use the examples in this repo to start from working patterns.</p>
+
+    <div class="qs-grid">
+      <div>
+        <div class="install-box">
+          <div class="install-tabs" id="install-tabs">
+            <button type="button" class="i-tab active" data-os="unix">macOS / Linux</button>
+            <button type="button" class="i-tab" data-os="windows">Windows</button>
+          </div>
+          <div class="install-code" id="install-code"></div>
+          <button class="copy-btn" id="copy-install-btn" type="button">
+            <i class="ri-file-copy-line"></i> Copy commands
+          </button>
+        </div>
+      </div>
+      <div class="code-preview">
+        <div class="code-preview-bar">
+          <div class="t-dot r"></div>
+          <div class="t-dot y"></div>
+          <div class="t-dot g"></div>
+          <span class="filename">examples/01-basics/quick_start_demo.bad</span>
+        </div>
+        <div class="code-preview-body">
+          <div><span class="t-comment"># shared setup</span></div>
+          <div>base_url = <span class="t-str">"https://jsonplaceholder.typicode.com"</span></div>
+          <div>timeout = <span class="t-num">10000</span></div>
+          <div>&nbsp;</div>
+          <div><span class="t-kw">test</span> <span class="t-str">"create post"</span> {</div>
+          <div>&nbsp;&nbsp;<span class="t-kw">send</span> <span class="t-kw">POST</span> <span class="t-str">"/posts"</span> {</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;body { title: <span class="t-str">"hello bad"</span> userId: <span class="t-num">1</span> }</div>
+          <div>&nbsp;&nbsp;}</div>
+          <div>&nbsp;&nbsp;<span class="t-kw">expect</span> status <span class="t-num">201</span></div>
+          <div>&nbsp;&nbsp;<span class="t-kw">expect</span> json.id <span class="t-kw">exists</span></div>
+          <div>}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <hr class="divider" />
+
+  <section class="features" id="features">
+    <div class="section-header">What You Get</div>
+    <h2 class="section-title">Feature Set for <span>Real API Workflows</span></h2>
+    <p class="section-desc">From smoke checks to multi-step auth flows, bad stays readable and fast.</p>
+
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ri-speed-up-line"></i></div>
+        <div class="feat-title">Fast C Runtime</div>
+        <div class="feat-desc">Minimal overhead and deterministic CLI execution with libcurl under the hood.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ri-file-text-line"></i></div>
+        <div class="feat-title">Readable Syntax</div>
+        <div class="feat-desc">Write tests like documentation with <code>send</code>, <code>expect</code>, and <code>let</code>.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ri-refresh-line"></i></div>
+        <div class="feat-title">Retry Controls</div>
+        <div class="feat-desc">Per-request retry count, delay, backoff, and jitter for flaky API conditions.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ri-node-tree"></i></div>
+        <div class="feat-title">Hooks and Groups</div>
+        <div class="feat-desc">Use lifecycle hooks and grouped scopes to organize test suites cleanly.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ri-links-line"></i></div>
+        <div class="feat-title">Imports and Templates</div>
+        <div class="feat-desc">Share request templates and variables across files with selective alias imports.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ri-bar-chart-box-line"></i></div>
+        <div class="feat-title">History and Reports</div>
+        <div class="feat-desc">JSONL history, per-file/per-test save modes, method filters, and output modes.</div>
+      </div>
+    </div>
+  </section>
+  <hr class="divider" />
+
+  <section class="modes" id="modes">
+    <div class="section-header">Output Modes</div>
+    <h2 class="section-title">Choose the <span>Result Format</span></h2>
+    <p class="section-desc">Keep local output compact or switch to CI-friendly formats when needed.</p>
+
+    <div class="modes-grid">
+      <div class="mode-card">
+        <span class="mode-emoji">🧪</span>
+        <div class="mode-name">Default</div>
+        <div class="mode-flag">./bad file.bad</div>
+        <div class="mode-desc">Readable sectioned output with assertion summaries and timing.</div>
+      </div>
+      <div class="mode-card">
+        <span class="mode-emoji">📋</span>
+        <div class="mode-name">Table / Flat</div>
+        <div class="mode-flag">--table · --flat</div>
+        <div class="mode-desc">Compact result views for quick scanning and CI logs.</div>
+      </div>
+      <div class="mode-card">
+        <span class="mode-emoji">📦</span>
+        <div class="mode-name">JSON History</div>
+        <div class="mode-flag">--save --save-mode</div>
+        <div class="mode-desc">Persist structured history with optional step details and body truncation.</div>
+      </div>
+    </div>
+  </section>
+  <hr class="divider" />
+
+  <section class="syntax" id="syntax">
+    <div class="section-header">Syntax Showcase</div>
+    <h2 class="section-title">Expressive DSL, <span>Predictable Runtime</span></h2>
+    <p class="section-desc">Cover common API testing patterns with very little ceremony.</p>
+
+    <div class="syntax-grid">
+      <div class="syn-card">
+        <div class="syn-label">Assertions and Variables</div>
+        <div class="syn-code">
+          <div><span class="t-kw">expect</span> status <span class="t-num">200</span></div>
+          <div><span class="t-kw">expect</span> json.user.id == <span class="t-num">1</span></div>
+          <div><span class="t-kw">expect</span> json.token <span class="t-kw">exists</span></div>
+          <div>&nbsp;</div>
+          <div><span class="t-kw">let</span> token = json.token</div>
+          <div><span class="t-kw">let</span> auth = <span class="t-kw">bearer</span> token</div>
+        </div>
+      </div>
+      <div class="syn-card">
+        <div class="syn-label">Templates and Imports</div>
+        <div class="syn-code">
+          <div><span class="t-kw">export</span> template get_user {</div>
+          <div>&nbsp;&nbsp;method GET</div>
+          <div>&nbsp;&nbsp;path <span class="t-str">"/users/1"</span></div>
+          <div>}</div>
+          <div>&nbsp;</div>
+          <div><span class="t-kw">import</span> <span class="t-str">"shared.bad"</span> <span class="t-kw">only</span> get_user</div>
+          <div><span class="t-kw">send</span> req get_user</div>
+        </div>
+      </div>
+      <div class="syn-card">
+        <div class="syn-label">Control Flow and Retry</div>
+        <div class="syn-code">
+          <div><span class="t-kw">if</span> status != <span class="t-num">200</span> {</div>
+          <div>&nbsp;&nbsp;<span class="t-kw">stop_all</span> because <span class="t-str">"health check failed"</span></div>
+          <div>}</div>
+          <div>&nbsp;</div>
+          <div><span class="t-kw">send</span> GET <span class="t-str">"/jobs"</span> {</div>
+          <div>&nbsp;&nbsp;retry <span class="t-num">3</span></div>
+          <div>&nbsp;&nbsp;retry_backoff exponential</div>
+          <div>}</div>
+        </div>
+      </div>
+      <div class="syn-card">
+        <div class="syn-label">Hooks and Timing</div>
+        <div class="syn-code">
+          <div><span class="t-kw">before_each</span> { print <span class="t-str">"starting"</span> }</div>
+          <div><span class="t-kw">after_each</span> { print <span class="t-str">"done"</span> }</div>
+          <div>&nbsp;</div>
+          <div><span class="t-kw">time_start</span> auth_flow</div>
+          <div><span class="t-kw">send</span> POST <span class="t-str">"/auth/login"</span></div>
+          <div><span class="t-kw">time_stop</span> auth_flow</div>
+          <div><span class="t-kw">expect</span> time auth_flow &lt; <span class="t-num">2000</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <hr class="divider" />
+
+  <section class="extension" id="extension">
+    <div style="max-width:1100px;margin:0 auto;padding:0;">
+      <div class="section-header">VS Code Extension</div>
+      <h2 class="section-title">BAD Language Tools <span>for VS Code</span></h2>
+      <p class="section-desc">Syntax highlighting, snippets, diagnostics, run actions, settings panel, and icon theme.</p>
+
+      <div class="ext-grid">
+        <div>
+          <div class="ext-features">
+            <div class="ext-feat">
+              <i class="ri-palette-line"></i>
+              <div>
+                <div class="ext-feat-title">Syntax Highlighting</div>
+                <div class="ext-feat-desc">TextMate grammar with rich keyword coverage for <code>.bad</code> and <code>.badrc</code>.</div>
+              </div>
+            </div>
+            <div class="ext-feat">
+              <i class="ri-lightbulb-line"></i>
+              <div>
+                <div class="ext-feat-title">IntelliSense + Snippets</div>
+                <div class="ext-feat-desc">Fast completions for test blocks, requests, assertions, hooks, and runtime flags.</div>
+              </div>
+            </div>
+            <div class="ext-feat">
+              <i class="ri-play-circle-line"></i>
+              <div>
+                <div class="ext-feat-title">Run from Editor</div>
+                <div class="ext-feat-desc">Run current BAD file directly with command palette and sidebar actions.</div>
+              </div>
+            </div>
+            <div class="ext-feat">
+              <i class="ri-settings-4-line"></i>
+              <div>
+                <div class="ext-feat-title">Runtime Config Panel</div>
+                <div class="ext-feat-desc">Edit one <code>.badrc</code> with advanced history controls from a dedicated webview.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ext-install-box">
+            <h3><i class="ri-puzzle-2-line" style="color:var(--red2);margin-right:8px;"></i> Install the Extension</h3>
+            <div class="ext-step">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Build the VSIX</strong> from <code>extenstion/</code> or use the packaged release.</div>
+            </div>
+            <div class="ext-step">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Install via CLI:</strong><br /><code>code --install-extension extenstion/dist/bad-language-tools-1.1.0.vsix</code></div>
+            </div>
+            <div class="ext-step">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>Open any <code>.bad</code> file</strong> and use BAD commands from the palette.</div>
+            </div>
+            <div class="ext-step">
+              <div class="step-num">4</div>
+              <div class="step-text"><strong>Configure settings</strong> with <em>BAD: Settings</em> and <em>BAD: Runtime Config</em>.</div>
+            </div>
+            <div class="ext-badge">
+              <i class="ri-code-box-line"></i> Language ID: <strong>bad</strong> · Extension: <strong>.bad</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <hr class="divider" />
+
+  <section class="techstack" id="techstack">
+    <div class="section-header">Tech Stack</div>
+    <h2 class="section-title">Built for Speed and <span>Traceability</span></h2>
+    <p class="section-desc">Lean C core, clear DSL grammar, and practical tooling.</p>
+
+    <div class="tech-grid">
+      <div class="tech-card"><span class="tech-icon">⚡</span><div class="tech-name">C99 Runtime</div><div class="tech-role">Lexer, parser, executor</div></div>
+      <div class="tech-card"><span class="tech-icon">🌐</span><div class="tech-name">libcurl</div><div class="tech-role">HTTP transport</div></div>
+      <div class="tech-card"><span class="tech-icon">🧱</span><div class="tech-name">JSON Helpers</div><div class="tech-role">Response assertions</div></div>
+      <div class="tech-card"><span class="tech-icon">🔨</span><div class="tech-name">GNU Make</div><div class="tech-role">Build workflow</div></div>
+      <div class="tech-card"><span class="tech-icon">🧩</span><div class="tech-name">VS Code API</div><div class="tech-role">Editor tooling</div></div>
+      <div class="tech-card"><span class="tech-icon">📜</span><div class="tech-name">TextMate</div><div class="tech-role">Syntax grammar</div></div>
+      <div class="tech-card"><span class="tech-icon">📦</span><div class="tech-name">JSONL History</div><div class="tech-role">Run artifacts</div></div>
+      <div class="tech-card"><span class="tech-icon">🖥</span><div class="tech-name">Cross-Platform</div><div class="tech-role">macOS, Linux, Windows</div></div>
+    </div>
+  </section>
+  <hr class="divider" />
+
+  <section class="testimonials">
+    <div class="section-header">What Teams Say</div>
+    <h2 class="section-title">Small Syntax, <span>Big Clarity</span></h2>
+
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-text">"We moved flaky Postman scripts into bad files and immediately got cleaner diffs and faster CI feedback."</div>
+        <div class="testi-author"><div class="testi-av">AK</div><div><div class="testi-name">@api_kumar</div><div class="testi-handle">Platform Engineer</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-text">"Hooks + templates made our auth scenarios readable. New contributors now understand tests in one pass."</div>
+        <div class="testi-author"><div class="testi-av">NT</div><div><div class="testi-name">@nisha_test</div><div class="testi-handle">QA Lead</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-text">"The extension plus runtime config panel is a huge win. We tune history capture without touching raw JSON."</div>
+        <div class="testi-author"><div class="testi-av">RV</div><div><div class="testi-name">@ravi_devops</div><div class="testi-handle">DevOps</div></div></div>
+      </div>
+    </div>
+  </section>
+  <hr class="divider" />
+
+  <section class="newsletter">
+    <div class="section-header" style="justify-content:center;">Stay Updated</div>
+    <h2>Get BAD Release Updates</h2>
+    <p>Major syntax changes, extension upgrades, runtime improvements, and new examples.</p>
+    <div class="email-form">
+      <input type="email" placeholder="you@team.com" />
+      <button><i class="ri-send-plane-fill"></i> Subscribe</button>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>bad</h3>
+        <p>CLI-first API testing DSL in C. Readable tests, reliable execution, practical tooling.</p>
+      </div>
+      <div class="footer-links-group">
+        <h4>Language</h4>
+        <ul class="footer-links">
+          <li><a href="docs.html#tests">Test Blocks</a></li>
+          <li><a href="docs.html#assertions">Assertions</a></li>
+          <li><a href="docs.html#hooks">Hooks</a></li>
+          <li><a href="docs.html#imports">Imports</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-group">
+        <h4>Tooling</h4>
+        <ul class="footer-links">
+          <li><a href="docs.html#cli">CLI Reference</a></li>
+          <li><a href="docs.html#config">Config File</a></li>
+          <li><a href="docs.html#history">History</a></li>
+          <li><a href="playground.html">Playground</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-group">
+        <h4>Project</h4>
+        <ul class="footer-links">
+          <li><a href="docs.html#install">Installation</a></li>
+          <li><a href="docs.html#examples">Examples</a></li>
+          <li><a href="docs.html#troubleshoot">Troubleshooting</a></li>
+          <li><a href="docs.html">README & Docs</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>bad v1.1 · API Testing DSL</span>
+      <div class="footer-social">
+        <a href="docs.html" class="social-btn" aria-label="Docs"><i class="ri-book-open-line"></i></a>
+        <a href="playground.html" class="social-btn" aria-label="Playground"><i class="ri-flask-line"></i></a>
+        <a href="index.html#quickstart" class="social-btn" aria-label="Quick Start"><i class="ri-rocket-line"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Full documentation for the BAD language — syntax, CLI, examples, configuration, and keyword reference.">
+  <title>Documentation — bad DSL</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/docs.css">
+</head>
+<body>
+
+<!-- ─── Navigation ──────────────────────────── -->
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      bad<span style="color:var(--accent)">.</span>
+      <span class="nav__logo-badge">DSL</span>
+    </a>
+    <div class="nav__links">
+      <a href="index.html">Home</a>
+      <a href="playground.html">Playground</a>
+      <a href="docs.html">Docs</a>
+      <a href="playground.html" class="nav__cta">Try it →</a>
+    </div>
+    <button class="nav__hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav__mobile">
+  <a href="index.html">Home</a>
+  <a href="playground.html">Playground</a>
+  <a href="docs.html">Docs</a>
+</div>
+
+<!-- ─── Page Layout ──────────────────────────── -->
+<div class="docs-page">
+
+  <!-- ─── Sidebar ────────────────────────────── -->
+  <aside class="docs-sidebar">
+    <div class="docs-sidebar__search">
+      <div class="search-input-wrap">
+        <span class="search-icon">⌕</span>
+        <input type="search" id="docs-search" placeholder="Search docs..." autocomplete="off">
+      </div>
+    </div>
+
+    <div class="docs-sidebar__section">
+      <div class="docs-sidebar__section-title">Getting Started</div>
+      <a class="docs-sidebar__link" data-target="intro" href="#intro">
+        <span class="link-icon">◉</span> Introduction
+      </a>
+      <a class="docs-sidebar__link" data-target="install" href="#install">
+        <span class="link-icon">▼</span> Installation
+      </a>
+      <a class="docs-sidebar__link" data-target="quickstart" href="#quickstart">
+        <span class="link-icon">▶</span> Quick Start
+      </a>
+    </div>
+
+    <div class="docs-sidebar__section">
+      <div class="docs-sidebar__section-title">Core Syntax</div>
+      <a class="docs-sidebar__link" data-target="tests" href="#tests">
+        <span class="link-icon">◈</span> Test Blocks
+      </a>
+      <a class="docs-sidebar__link" data-target="send" href="#send">
+        <span class="link-icon">→</span> Requests (send)
+      </a>
+      <a class="docs-sidebar__link" data-target="assertions" href="#assertions">
+        <span class="link-icon">✓</span> Assertions
+      </a>
+      <a class="docs-sidebar__link" data-target="variables" href="#variables">
+        <span class="link-icon">$</span> Variables (let)
+      </a>
+      <a class="docs-sidebar__link" data-target="operators" href="#operators">
+        <span class="link-icon">≡</span> Operators
+      </a>
+      <a class="docs-sidebar__link" data-target="options" href="#options">
+        <span class="link-icon">⚙</span> Top-level Options
+      </a>
+    </div>
+
+    <div class="docs-sidebar__section">
+      <div class="docs-sidebar__section-title">Control Flow</div>
+      <a class="docs-sidebar__link" data-target="conditionals" href="#conditionals">
+        <span class="link-icon">⎇</span> If / Else
+      </a>
+      <a class="docs-sidebar__link" data-target="retry" href="#retry">
+        <span class="link-icon">↻</span> Retry Policy
+      </a>
+      <a class="docs-sidebar__link" data-target="timing" href="#timing">
+        <span class="link-icon">⏱</span> Timing & Latency
+      </a>
+      <a class="docs-sidebar__link" data-target="stop" href="#stop">
+        <span class="link-icon">■</span> Stop & Skip
+      </a>
+    </div>
+
+    <div class="docs-sidebar__section">
+      <div class="docs-sidebar__section-title">Organisation</div>
+      <a class="docs-sidebar__link" data-target="groups" href="#groups">
+        <span class="link-icon">▣</span> Groups
+      </a>
+      <a class="docs-sidebar__link" data-target="hooks" href="#hooks">
+        <span class="link-icon">⚓</span> Hooks
+      </a>
+      <a class="docs-sidebar__link" data-target="imports" href="#imports">
+        <span class="link-icon">⇒</span> Imports & Exports
+      </a>
+      <a class="docs-sidebar__link" data-target="templates" href="#templates">
+        <span class="link-icon">⬡</span> Request Templates
+      </a>
+      <a class="docs-sidebar__link" data-target="only" href="#only">
+        <span class="link-icon">◎</span> Only / Skip
+      </a>
+    </div>
+
+    <div class="docs-sidebar__section">
+      <div class="docs-sidebar__section-title">Reference</div>
+      <a class="docs-sidebar__link" data-target="cli" href="#cli">
+        <span class="link-icon">$</span> CLI Reference
+      </a>
+      <a class="docs-sidebar__link" data-target="output" href="#output">
+        <span class="link-icon">▤</span> Output Modes
+      </a>
+      <a class="docs-sidebar__link" data-target="config" href="#config">
+        <span class="link-icon">⚙</span> Config File
+      </a>
+      <a class="docs-sidebar__link" data-target="history" href="#history">
+        <span class="link-icon">◷</span> History
+      </a>
+      <a class="docs-sidebar__link" data-target="keywords" href="#keywords">
+        <span class="link-icon">⌨</span> Keyword Reference
+      </a>
+      <a class="docs-sidebar__link" data-target="examples" href="#examples">
+        <span class="link-icon">📄</span> Examples
+      </a>
+      <a class="docs-sidebar__link" data-target="exit-codes" href="#exit-codes">
+        <span class="link-icon">#</span> Exit Codes
+      </a>
+      <a class="docs-sidebar__link" data-target="troubleshoot" href="#troubleshoot">
+        <span class="link-icon">🔧</span> Troubleshooting
+      </a>
+    </div>
+  </aside>
+
+  <!-- ─── Main Content ─────────────────────────── -->
+  <main class="docs-content">
+
+    <!-- ════════════════════════════════════════
+         INTRODUCTION
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="intro">
+      <h2>Introduction <a class="anchor" href="#intro">#</a></h2>
+      <p><strong>bad</strong> is a CLI-first API testing domain-specific language (DSL) written in C. It lets you write expressive, readable test suites for HTTP APIs without a heavyweight framework, runtime, or package ecosystem.</p>
+      <p>Tests in bad feel like documentation — you describe what a request should look like and what response to expect, in plain declarative statements. The bad binary runs these <code>.bad</code> files and reports results with colored terminal output, timing info, and structured history.</p>
+
+      <div class="callout tip">
+        <strong>Philosophy:</strong> bad is designed for engineers who want fast, readable API tests that live close to their code — not a separate test platform to manage.
+      </div>
+
+      <h3 id="intro-features">Key Capabilities</h3>
+      <ul>
+        <li>Full HTTP: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code> with body and header blocks</li>
+        <li>JSON path assertions with comparison operators and string matchers</li>
+        <li>Variable capture from response bodies, environment, CLI args, and object literals</li>
+        <li>Request/template reuse with inline expectations and override controls</li>
+        <li>If/else control flow, retry policies, named latency timers</li>
+        <li>Lifecycle hooks plus error hooks and URL wildcard hooks</li>
+        <li>Grouped tests, skip/only filters, fail-fast mode</li>
+        <li>Multiple output formats: default, verbose, flat, table, JSON</li>
+        <li>JSONL history logging with optional step-level detail</li>
+        <li>VS Code extension with syntax highlighting and snippets</li>
+      </ul>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         INSTALLATION
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="install">
+      <h2>Installation <a class="anchor" href="#install">#</a></h2>
+      <p>bad is distributed as a compiled C binary. Clone or download the source, then build with <code>make</code>. No runtime or package manager needed.</p>
+
+      <h3 id="install-mac">macOS</h3>
+      <pre><code class="language-bad">brew install curl
+make
+./bad examples/01-basics/quick_start_demo.bad</code></pre>
+
+      <h3 id="install-linux">Linux (Debian/Ubuntu)</h3>
+      <pre><code class="language-bad">sudo apt update
+sudo apt install -y build-essential libcurl4-openssl-dev
+make
+./bad examples/01-basics/quick_start_demo.bad</code></pre>
+
+      <h3 id="install-windows">Windows (MSYS2/MinGW)</h3>
+      <pre><code class="language-bad">pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-curl make
+make
+./bad.exe examples/01-basics/quick_start_demo.bad</code></pre>
+      <p>PowerShell runner (alternative):</p>
+      <pre><code class="language-bad">.\run_bad.ps1 examples/01-basics/quick_start_demo.bad</code></pre>
+
+      <h3 id="install-global">Global Install</h3>
+      <p>To install bad system-wide and use it from any directory:</p>
+      <pre><code class="language-bad">sudo make install
+bad examples/01-basics/quick_start_demo.bad</code></pre>
+
+      <h3 id="install-vscode">VS Code Extension</h3>
+      <p>Install the <code>bad-language-tools</code> VSIX from the <code>extenstion/</code> folder in the repo. It provides syntax highlighting, snippets, and a custom file icon theme for <code>.bad</code> files.</p>
+      <pre><code class="language-bad">code --install-extension extenstion/dist/bad-language-tools-1.1.0.vsix --profile comp</code></pre>
+
+      <div class="callout info">
+        <strong>Note:</strong> bad requires <code>libcurl</code> for HTTP. On macOS, Homebrew's curl works. On Linux, install <code>libcurl4-openssl-dev</code> before building.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         QUICK START
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="quickstart">
+      <h2>Quick Start <a class="anchor" href="#quickstart">#</a></h2>
+      <p>Create a file called <code>quick.bad</code> with your first test:</p>
+      <pre><code class="language-bad">test "ping" {
+    send GET "https://jsonplaceholder.typicode.com/users/1"
+    expect status 200
+}</code></pre>
+      <p>Run it:</p>
+      <pre><code class="language-bad">./bad quick.bad</code></pre>
+      <p>You'll see colored output showing if the test passed or failed.</p>
+
+      <h3 id="quickstart-base">Using base_url</h3>
+      <p>Set a base URL at the top of your file to avoid repeating the full server address:</p>
+      <pre><code class="language-bad">base_url = "https://jsonplaceholder.typicode.com"
+timeout  = 10000
+
+test "get user" {
+    send GET "/users/1"
+    expect status 200
+    expect json.id == 1
+    expect json.name exists
+}
+
+test "list posts" {
+    send GET "/posts"
+    expect status 200
+    expect json.0.id exists
+}</code></pre>
+
+      <div class="callout tip">
+        <strong>Tip:</strong> Run your first example with <code>./bad examples/01-basics/quick_start_demo.bad</code> to see bad in action against a live public API.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         TEST BLOCKS
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="tests">
+      <h2>Test Blocks <a class="anchor" href="#tests">#</a></h2>
+      <p>The <code>test</code> block is the fundamental unit in bad. Each test has a name and a body containing one or more <code>send</code> statements and <code>expect</code> assertions.</p>
+
+      <pre><code class="language-bad">test "name of the test" {
+    send GET "/endpoint"
+    expect status 200
+    expect json.field exists
+}</code></pre>
+
+      <p>Tests run sequentially in the order they appear in the file. Variables set inside a test are accessible in subsequent tests (file-scoped).</p>
+
+      <h3 id="tests-skip">Skip a Test</h3>
+      <pre><code class="language-bad">skip test "legacy endpoint" because "deprecated"</code></pre>
+
+      <h3 id="tests-only">Focus a Test</h3>
+      <pre><code class="language-bad">only test "smoke test"</code></pre>
+      <p>When any <code>only test</code> exists, only those tests run.</p>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         REQUESTS
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="send">
+      <h2>Requests — <code>send</code> <a class="anchor" href="#send">#</a></h2>
+      <p>The <code>send</code> keyword fires an HTTP request. Supported methods: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>.</p>
+
+      <h3 id="send-basic">Basic Usage</h3>
+      <pre><code class="language-bad"># Simple GET
+send GET "/users/1"
+
+# GET using a variable as path
+let path = "/users/1"
+send GET path
+
+# POST with full URL
+send POST "https://api.example.com/posts"</code></pre>
+
+      <h3 id="send-body">Request Body</h3>
+      <pre><code class="language-bad">send POST "/posts" {
+    body {
+        title:  "Hello bad"
+        body:   "testing is easy"
+        userId: 1
+    }
+}
+
+# Alias: payload = body
+send POST "/posts" {
+    payload {
+        title: "Hello"
+    }
+}</code></pre>
+
+      <h3 id="send-headers">Request Headers</h3>
+      <pre><code class="language-bad">send GET "/private" {
+    header {
+        Authorization: "Bearer my-token"
+        Accept:        "application/json"
+        X-Custom:      "bad-lang"
+    }
+}
+
+# Alias: headers = header
+send GET "/endpoint" {
+    headers {
+        Content-Type: "application/json"
+    }
+}</code></pre>
+
+      <h3 id="send-combined">Combined Body and Headers</h3>
+      <pre><code class="language-bad">send POST "/users" {
+    body {
+        name:  "Krish"
+        email: "krish@example.com"
+    }
+    header {
+        Authorization:  auth_token
+        Content-Type:   "application/json"
+        X-Request-Id:   "req-001"
+    }
+}</code></pre>
+
+      <div class="callout">
+        <strong>Path variables:</strong> You can use a variable name directly as the path: <code>send GET user_path</code>. bad resolves it at runtime.
+      </div>
+
+      <h3 id="send-object-source">Object Sources in Body/Header</h3>
+      <pre><code class="language-bad">let common_headers = {
+    Accept: "application/json"
+    X-Client: "bad"
+}
+
+let payload_defaults = {
+    userId: 1
+    completed: false
+}
+
+send POST "/todos" {
+    header common_headers
+    body {
+        payload_defaults
+        title: "override title"
+    }
+}</code></pre>
+
+      <div class="callout info">
+        <strong>Object variables:</strong> Object variables are spread-only in <code>body</code>/<code>header</code> sources. They cannot be resolved as scalar values.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         ASSERTIONS
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="assertions">
+      <h2>Assertions <a class="anchor" href="#assertions">#</a></h2>
+      <p>Assertions verify the response. Use <code>expect</code> or <code>assert</code> (they're identical). A failed assertion marks the test as failed but continues running unless stopped.</p>
+
+      <h3 id="assert-status">Status Assertions</h3>
+      <pre><code class="language-bad">expect status 200
+expect status 201
+assert status 204
+    expect status >= 200
+    expect status < 500
+expect status in [200, 201, 204]</code></pre>
+
+      <h3 id="assert-json">JSON Path Assertions</h3>
+      <pre><code class="language-bad"># Existence
+expect json.id exists
+expect json.user.name exists
+expect json.items.0.price exists
+
+# Equality
+expect json.id == 1
+expect json.status == "active"
+expect json.verified == true
+
+# Comparison
+expect json.count > 0
+expect json.count >= 1
+expect json.price < 100
+expect json.score <= 99.9
+
+# Inequality
+expect json.status != "error"
+expect json.id != 0</code></pre>
+
+      <h3 id="assert-string">String Matchers</h3>
+      <pre><code class="language-bad">expect json.email contains "@"
+expect json.name starts_with "Krish"
+expect json.email ends_with "@example.com"
+expect json.trace_id regex "^[a-z0-9-]{8,}$"</code></pre>
+
+      <h3 id="assert-timing">Timing Assertions</h3>
+      <pre><code class="language-bad"># Assert last request was under 500ms
+expect time_ms < 500
+
+# Assert named timer
+expect time auth_flow < 2000</code></pre>
+
+      <div class="callout tip">
+        <strong>JSON paths</strong> use dot notation. Array items use zero-based indices: <code>json.items.0.id</code> accesses the first item's id.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         VARIABLES
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="variables">
+      <h2>Variables — <code>let</code> <a class="anchor" href="#variables">#</a></h2>
+      <p>Variables are declared with <code>let</code> and are file-scoped. They persist across test blocks, enabling multi-step workflows like authentication.</p>
+
+      <h3 id="vars-basic">Basic Declarations</h3>
+      <pre><code class="language-bad">let user_id    = "1"
+let base_path  = "/users"
+let timeout_ms = 5000
+let enabled    = true</code></pre>
+
+      <h3 id="vars-response">Capture from Response</h3>
+      <p>After a <code>send</code>, these sources are available to <code>let</code>:</p>
+      <pre><code class="language-bad">send POST "/auth/login" {
+    body { email: "user@example.com" password: "secret" }
+}
+
+let token   = json.token          # JSON field from response body
+let code    = status               # HTTP status code (number)
+let elapsed = time_ms              # Duration of last request in ms
+let now     = now_ms               # Current epoch timestamp in ms
+let auth    = bearer token         # Prepends "Bearer " if missing</code></pre>
+
+      <h3 id="vars-env">Environment and CLI Args</h3>
+      <pre><code class="language-bad">let api_key  = env API_KEY         # Read process env variable
+let mode     = env DEPLOY_ENV
+let first    = args 0              # First positional CLI argument
+let second   = args 1</code></pre>
+
+      <h3 id="vars-object">Object Variables</h3>
+      <pre><code class="language-bad">let shared_headers = {
+        Accept: "application/json"
+        X-Trace: "suite-1"
+    }
+
+    let base_body = {
+        userId: 1
+        completed: false
+    }
+
+    send POST "/todos" {
+        header shared_headers
+        body base_body
+    }</code></pre>
+
+      <h3 id="vars-print">Printing Variables</h3>
+      <pre><code class="language-bad">print token
+    print elapsed
+    let user_name = json.name
+    print user_name</code></pre>
+
+      <div class="callout warn">
+        <strong>Scope:</strong> Variables are file-scoped. They persist from the moment they are set until the file finishes. A variable set inside a test is visible in all subsequent tests.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         OPERATORS
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="operators">
+      <h2>Operators <a class="anchor" href="#operators">#</a></h2>
+      <p>bad supports comparison, string, membership, and logical operators in assertions and conditions.</p>
+
+      <h3 id="op-comparison">Comparison Operators</h3>
+      <div class="op-grid">
+        <div class="op-item"><code>==</code><span>Equal to</span></div>
+        <div class="op-item"><code>!=</code><span>Not equal to</span></div>
+        <div class="op-item"><code>&gt;</code><span>Greater than</span></div>
+        <div class="op-item"><code>&gt;=</code><span>Greater than or equal</span></div>
+        <div class="op-item"><code>&lt;</code><span>Less than</span></div>
+        <div class="op-item"><code>&lt;=</code><span>Less than or equal</span></div>
+        <div class="op-item"><code>exists</code><span>Field is present</span></div>
+        <div class="op-item"><code>in [...]</code><span>Value in list</span></div>
+      </div>
+
+      <h3 id="op-string">String Operators</h3>
+      <div class="op-grid">
+        <div class="op-item"><code>contains</code><span>Substring check</span></div>
+        <div class="op-item"><code>starts_with</code><span>Prefix check</span></div>
+        <div class="op-item"><code>ends_with</code><span>Suffix check</span></div>
+        <div class="op-item"><code>regex</code><span>Regex match</span></div>
+      </div>
+
+      <h3 id="op-logical">Logical Operators</h3>
+      <p>Used in <code>if</code> conditions only (not in <code>expect</code> statements):</p>
+      <div class="op-grid">
+        <div class="op-item"><code>and</code><span>Both must be true</span></div>
+        <div class="op-item"><code>or</code><span>Either must be true</span></div>
+        <div class="op-item"><code>not</code><span>Unary negation</span></div>
+        <div class="op-item"><code>(...)</code><span>Grouping</span></div>
+      </div>
+
+      <h3 id="op-precedence">Operator Precedence</h3>
+      <table class="keyword-table">
+        <tr><th>Priority</th><th>Operator(s)</th><th>Notes</th></tr>
+        <tr><td>1 (highest)</td><td><code>(...)</code></td><td>Explicit grouping</td></tr>
+        <tr><td>2</td><td><code>not</code></td><td>Unary negation</td></tr>
+        <tr><td>3</td><td><code>==  !=  &lt;  &lt;=  &gt;  &gt;=  contains  starts_with  ends_with  regex  in  exists</code></td><td>Comparison / membership</td></tr>
+        <tr><td>4</td><td><code>and</code></td><td>Logical conjunction</td></tr>
+        <tr><td>5 (lowest)</td><td><code>or</code></td><td>Logical disjunction</td></tr>
+      </table>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         TOP-LEVEL OPTIONS
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="options">
+      <h2>Top-level Options <a class="anchor" href="#options">#</a></h2>
+      <p>Set runtime options at the top of any <code>.bad</code> file. CLI flags override these values.</p>
+      <pre><code class="language-bad">base_url       = "https://api.example.com"
+timeout        = 10000       # Request timeout in milliseconds
+print_request  = false       # Log outgoing request details
+print_response = true        # Log raw response body
+show_time      = true        # Show per-test timing
+show_timestamp = true        # Show wall-clock timestamps
+json_pretty    = true        # Pretty-print JSON in output
+save_history   = true        # Write results to JSONL history
+save_steps     = true        # Include step detail in history
+history_mode   = "per-file" # all | per-file | per-test | off
+history_methods = "GET,POST" # save only selected methods
+history_exclude_methods = "DELETE"
+history_only_failed = false
+history_include_headers = true
+history_include_request_body = true
+history_include_response_body = true
+history_max_body_bytes = 0   # 0 => unlimited
+history_dir    = ".bad-history"
+history_file   = ".bad-history/all-runs.jsonl"
+retry_count    = 2           # Global default retry count
+retry_delay_ms = 100         # Global retry delay
+retry_backoff  = linear      # linear or exponential
+retry_jitter_ms = 25         # Jitter range in ms</code></pre>
+
+      <div class="callout info">
+        <strong>Aliases:</strong> <code>base</code> is an alias for <code>base_url</code>, and <code>wait</code> is an alias for <code>timeout</code>.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         CONDITIONALS
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="conditionals">
+      <h2>Conditionals — <code>if / else_if / else</code> <a class="anchor" href="#conditionals">#</a></h2>
+      <p>bad supports if/else control flow both inside test blocks and at the top level of a file.</p>
+
+      <pre><code class="language-bad">test "conditional logic" {
+    send GET "/health"
+
+    if status == 200 {
+        print "health check passed"
+    } else_if status == 429 {
+        sleep 100
+        stop because "rate limited"
+    } else {
+        stop_all because "service unhealthy"
+    }
+}
+
+# Logical operators
+if status == 200 and not json.error exists {
+    print "healthy response"
+}
+
+if status == 200 or status == 201 {
+    print "accepted status"
+}
+
+# Explicit grouping with parentheses
+if (status == 200 or status == 201) and not (json.error exists) {
+    print "success without errors"
+}</code></pre>
+
+      <h3 id="cond-top">Top-level Conditionals</h3>
+      <p>Useful for suite preflight checks that abort early:</p>
+      <pre><code class="language-bad">let preflight = send GET "/health"
+
+if status != 200 {
+    stop_all because "health check failed"
+} else {
+    print "preflight ok"
+}</code></pre>
+
+      <h3 id="cond-skip">Conditional Skip / Fail</h3>
+      <pre><code class="language-bad"># Skip current test if condition is met
+skip_if status != 200 because "service unavailable"
+
+# Mark current test as failed if condition is met
+fail_if status >= 500 because "server error"</code></pre>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         RETRY
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="retry">
+      <h2>Retry Policy <a class="anchor" href="#retry">#</a></h2>
+      <p>bad automatically retries requests on network failures, HTTP 429, and 5xx responses. Configure retry behavior globally or per-request.</p>
+
+      <h3 id="retry-global">Global Defaults</h3>
+      <pre><code class="language-bad">retry_count    = 2
+retry_delay_ms = 100
+retry_backoff  = linear     # linear | exponential
+retry_jitter_ms = 25</code></pre>
+
+      <h3 id="retry-per">Per-request Override</h3>
+      <pre><code class="language-bad">send GET "http://unreliable.example.com/data" {
+    retry 3
+    retry_delay_ms 200
+    retry_backoff exponential
+    retry_jitter_ms 50
+}</code></pre>
+
+      <table class="keyword-table">
+        <tr><th>Option</th><th>Description</th><th>Default</th></tr>
+        <tr><td>retry N</td><td>Number of retry attempts</td><td>0</td></tr>
+        <tr><td>retry_delay_ms N</td><td>Delay between retries in ms</td><td>0</td></tr>
+        <tr><td>retry_backoff</td><td><code>linear</code> or <code>exponential</code></td><td>linear</td></tr>
+        <tr><td>retry_jitter_ms N</td><td>Random jitter added to delay</td><td>0</td></tr>
+      </table>
+
+      <div class="callout tip">
+        <strong>Exponential backoff:</strong> Each retry doubles the previous delay. Combined with jitter, this avoids thundering-herd problems in distributed tests.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         TIMING
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="timing">
+      <h2>Timing &amp; Latency <a class="anchor" href="#timing">#</a></h2>
+      <p>bad has built-in latency tracking both for individual requests and multi-step flows.</p>
+
+      <h3 id="timing-builtin">Built-in Values</h3>
+      <table class="keyword-table">
+        <tr><th>Value</th><th>Description</th></tr>
+        <tr><td>time_ms</td><td>Duration of the most recent request in milliseconds</td></tr>
+        <tr><td>now_ms</td><td>Current epoch time in milliseconds</td></tr>
+        <tr><td>time &lt;n&gt;</td><td>Elapsed ms for named timer &lt;n&gt;</td></tr>
+        <tr><td>&lt;n&gt;_ms</td><td>Auto-variable written when time_stop &lt;n&gt; runs</td></tr>
+        <tr><td>last_time_ms</td><td>Alias for time_ms of most recent request</td></tr>
+      </table>
+
+      <h3 id="timing-named">Named Timers</h3>
+      <pre><code class="language-bad">time_start checkout_flow
+
+# ... multiple requests ...
+send POST "/cart/add" { body { sku: "abc" qty: 1 } }
+send POST "/checkout"
+send GET "/order/confirm"
+
+time_stop checkout_flow
+
+let total = time checkout_flow
+print total
+
+expect time checkout_flow < 5000</code></pre>
+
+      <h3 id="timing-assert">Latency Assertions</h3>
+      <pre><code class="language-bad">expect time_ms < 300
+expect time auth_flow < 2000
+expect time_ms <= 1000</code></pre>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         STOP & SKIP
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="stop">
+      <h2>Stop &amp; Sleep <a class="anchor" href="#stop">#</a></h2>
+      <p>Control test execution flow with stop commands and pacing helpers.</p>
+
+      <pre><code class="language-bad"># Stop current test, continue with next
+stop because "precondition failed"
+
+# Abort entire file execution
+stop_all because "critical failure"
+
+# Pause execution for N milliseconds
+sleep 250</code></pre>
+
+      <table class="keyword-table">
+        <tr><th>Keyword</th><th>Effect</th></tr>
+        <tr><td>stop</td><td>Exits the current test block, moves to next test</td></tr>
+        <tr><td>stop_all</td><td>Exits the entire file, no more tests run</td></tr>
+        <tr><td>sleep N</td><td>Pauses execution for N milliseconds</td></tr>
+        <tr><td>skip_if cond because "reason"</td><td>Conditionally skips test if condition holds</td></tr>
+        <tr><td>fail_if cond because "reason"</td><td>Marks test as failed if condition holds</td></tr>
+      </table>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         GROUPS
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="groups">
+      <h2>Groups <a class="anchor" href="#groups">#</a></h2>
+      <p>Groups organize related tests under a named section. They appear as a labeled block in output.</p>
+
+      <pre><code class="language-bad">group "users" {
+    test "get one user" {
+        send GET "/users/1"
+        expect status 200
+    }
+
+    test "list users" {
+        send GET "/users"
+        expect status 200
+    }
+}
+
+group "posts" {
+    test "get post" {
+        send GET "/posts/1"
+        expect status 200
+    }
+}
+
+# Skip an entire group
+skip group "legacy" because "deprecated" {
+    test "old endpoint" {
+        send GET "/v1/users"
+        expect status 200
+    }
+}
+
+# Run only one group
+only group "users"</code></pre>
+
+      <div class="callout info">
+        <strong>Nesting:</strong> Groups cannot be nested inside other groups. Place them at the top level of the file.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         HOOKS
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="hooks">
+      <h2>Lifecycle Hooks <a class="anchor" href="#hooks">#</a></h2>
+      <p>Hooks run at predictable points in execution. They can contain any valid bad statements.</p>
+
+      <pre><code class="language-bad">before_all {
+    print "suite setup"
+    let trace_id = "suite-001"
+}
+
+before_each {
+    let start = now_ms
+    print "test starting"
+}
+
+after_each {
+    let end = now_ms
+    print "test done"
+}
+
+after_all {
+    print "suite complete"
+}
+
+test "first test" { ... }
+test "second test" { ... }</code></pre>
+
+      <h3 id="hooks-error">Error Hooks</h3>
+      <pre><code class="language-bad">on_error {
+    print "any assertion/network failure"
+}
+
+on_assertion_error {
+    print "assertion failure"
+}
+
+on_network_error {
+    print "network failure"
+}</code></pre>
+
+      <h3 id="hooks-url">URL Wildcard Hooks</h3>
+      <pre><code class="language-bad">before_url "/*" {
+    print "before request"
+}
+
+after_url "/users/*" {
+    print "after users request"
+}
+
+on_url_error "/users/*" {
+    print "users request failed"
+}</code></pre>
+
+      <p>URL hook patterns support <code>*</code> wildcards and are matched against both full URL and request path.</p>
+
+      <table class="keyword-table">
+        <tr><th>Hook</th><th>When it runs</th></tr>
+        <tr><td>before_all</td><td>Once before all tests in the file</td></tr>
+        <tr><td>before_each</td><td>Before every individual test</td></tr>
+        <tr><td>after_each</td><td>After every individual test</td></tr>
+        <tr><td>after_all</td><td>Once after all tests in the file</td></tr>
+        <tr><td>on_error</td><td>When assertion or network failures happen</td></tr>
+        <tr><td>on_assertion_error</td><td>Only on assertion failures</td></tr>
+        <tr><td>on_network_error</td><td>Only on network/transport failures</td></tr>
+        <tr><td>before_url "pattern"</td><td>Before requests matching URL/path wildcard</td></tr>
+        <tr><td>after_url "pattern"</td><td>After requests matching URL/path wildcard</td></tr>
+        <tr><td>on_url_error "pattern"</td><td>On errors for matching URL/path wildcard</td></tr>
+      </table>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         IMPORTS & EXPORTS
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="imports">
+      <h2>Imports &amp; Exports <a class="anchor" href="#imports">#</a></h2>
+      <p>bad supports modular test suites through import/export declarations. Share variables, request templates, and config across files.</p>
+
+      <h3 id="imp-export">Exporting</h3>
+      <pre><code class="language-bad"># shared.bad
+export let base = "https://api.example.com"
+export let timeout = 10000
+export let auth_token = "Bearer xyz"
+
+export request get_user {
+    method GET
+    path "/users/1"
+    header {
+        Accept: "application/json"
+    }
+}</code></pre>
+
+      <h3 id="imp-import">Importing</h3>
+      <pre><code class="language-bad"># Import everything
+import "shared.bad"
+
+# Alias: use = import
+use "shared.bad"
+
+# Selective import
+import "shared.bad" only auth_token, base
+
+# Selective import with alias
+import "v2/templates.bad" only users_path as user_path
+
+# Import only to execute (run its tests)
+only import "smoke.bad"</code></pre>
+
+      <div class="callout tip">
+        <strong>Paths:</strong> Import paths are relative to the current working directory when bad is invoked, not relative to the importing file.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         TEMPLATES
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="templates">
+      <h2>Request Templates <a class="anchor" href="#templates">#</a></h2>
+      <p>Request templates define reusable request configurations. Use them to avoid duplicating headers, paths, expectations, and retry policy across tests.</p>
+
+      <h3 id="tpl-define">Define a Template</h3>
+      <pre><code class="language-bad">template get_user {
+    method GET
+    path "/users/1"
+    header shared_headers
+    expect status 200
+  }
+
+  template create_todo {
+    method POST
+    body defaults
+    retry 2
+    retry_delay_ms 100
+    expect status in [200, 201]
+}
+
+  # Aliases: req = request, template = request
+req create_post {
+    method POST
+    path "/posts"
+    header {
+        Content-Type: "application/json"
+    }
+}</code></pre>
+
+      <div class="callout info">
+        <strong>Template path:</strong> <code>path</code> is optional in templates. You can supply it later at send time via <code>with { path ... }</code>.
+      </div>
+
+      <h3 id="tpl-use">Using a Template</h3>
+      <pre><code class="language-bad">test "fetch user" {
+    send req get_user
+    expect status 200
+}
+
+# Override fields at call site
+test "fetch user 2" {
+    send req get_user with {
+        path "/users/2"
+        headers {
+            X-Version: "2"
+        }
+    }
+    expect status 200
+}
+
+# Merge template body defaults with override body fields
+send req create_todo with {
+  body {
+    title: "override"
+  }
+  body_merge true
+}
+
+# Also valid
+send request get_user
+send template get_user</code></pre>
+
+    <p>By default, a <code>body</code> override replaces template body content. Use <code>body_merge true</code> (or <code>merge_body true</code>) to merge template defaults with override fields.</p>
+
+      <h3 id="tpl-only">Template Filters</h3>
+      <pre><code class="language-bad"># Run only tests that use these templates
+only req get_user, create_post</code></pre>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         ONLY / SKIP
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="only">
+      <h2>Only &amp; Skip Filters <a class="anchor" href="#only">#</a></h2>
+      <p>bad provides fine-grained control over which tests, groups, imports, and templates execute.</p>
+
+      <pre><code class="language-bad"># Run only a named test
+only test "smoke test"
+
+# Run only a named group
+only group "auth"
+
+# Run only tests using specific templates
+only req get_user, create_post
+
+# Run only a specific imported file
+only import "smoke.bad"
+
+# Skip a test
+skip test "legacy" because "deprecated"
+
+# Skip a group
+skip group "slow-tests" because "performance"
+
+# Conditional skip inside a test
+skip_if status != 200 because "prerequisite failed"
+
+# Fail if condition holds
+fail_if status >= 500 because "server error"</code></pre>
+
+      <h3 id="only-priority">Filter Priority</h3>
+      <ol>
+        <li>If any <code>only test</code> exists → only those tests run</li>
+        <li>If no <code>only test</code> but <code>only group</code> → only those groups run</li>
+        <li><code>only import</code> limits which imported files execute</li>
+        <li><code>only req</code> runs tests that use selected request templates</li>
+      </ol>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         CLI REFERENCE
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="cli">
+      <h2>CLI Reference <a class="anchor" href="#cli">#</a></h2>
+      <p>Usage: <code>./bad &lt;file.bad&gt; [flags] [-- args...]</code></p>
+
+      <h3 id="cli-basic">Basic Execution</h3>
+      <pre><code class="language-bad">./bad file.bad
+./bad file.bad --verbose
+./bad file.bad --full-trace
+./bad file.bad -- arg0 arg1    # positional CLI args</code></pre>
+
+      <h3 id="cli-flags">All Flags</h3>
+      <table class="cli-table">
+        <tr><th>Flag</th><th>Description</th></tr>
+        <tr><td>--verbose</td><td>Show response body in tree format after each request</td></tr>
+        <tr><td>--full-trace</td><td>Show all steps including skipped and internal</td></tr>
+        <tr><td>--flat</td><td>Output JSON fields as key=value pairs</td></tr>
+        <tr><td>--table</td><td>Output JSON arrays as a formatted table</td></tr>
+        <tr><td>--json-view</td><td>Output compact JSON</td></tr>
+        <tr><td>--json-pretty</td><td>Output pretty-printed JSON</td></tr>
+        <tr><td>--print-request</td><td>Log the full outgoing request</td></tr>
+        <tr><td>--print-response</td><td>Log the full raw response</td></tr>
+        <tr><td>--show-time</td><td>Show per-request timing</td></tr>
+        <tr><td>--show-timestamp</td><td>Show wall-clock timestamps</td></tr>
+        <tr><td>--timing</td><td>Alias for --show-time</td></tr>
+        <tr><td>--timestamp</td><td>Alias for --show-timestamp</td></tr>
+        <tr><td>--save</td><td>Write results to JSONL history file</td></tr>
+        <tr><td>--save-steps</td><td>Include step-level detail in history</td></tr>
+        <tr><td>--save-dir &lt;dir&gt;</td><td>Directory for history files</td></tr>
+        <tr><td>--save-file &lt;path&gt;</td><td>Specific history file path</td></tr>
+        <tr><td>--save-mode &lt;mode&gt;</td><td>History mode: all, per-file, per-test, off</td></tr>
+        <tr><td>--save-methods &lt;csv&gt;</td><td>Save only listed HTTP methods (GET,POST,...)</td></tr>
+        <tr><td>--save-exclude-methods &lt;csv&gt;</td><td>Skip listed methods from history</td></tr>
+        <tr><td>--save-only-failed</td><td>Persist history only for failed tests</td></tr>
+        <tr><td>--save-headers / --no-save-headers</td><td>Toggle request headers in history records</td></tr>
+        <tr><td>--save-request-body / --no-save-request-body</td><td>Toggle request body in history</td></tr>
+        <tr><td>--save-response-body / --no-save-response-body</td><td>Toggle response body in history</td></tr>
+        <tr><td>--save-max-body-bytes &lt;n&gt;</td><td>Truncate stored request/response bodies to n bytes</td></tr>
+        <tr><td>--base &lt;url&gt;</td><td>Override base_url</td></tr>
+        <tr><td>--timeout &lt;ms&gt;</td><td>Override timeout</td></tr>
+        <tr><td>--fail-fast</td><td>Abort on first failed test</td></tr>
+        <tr><td>--remember-token</td><td>Persist captured auth token across runs</td></tr>
+        <tr><td>--config &lt;path&gt;</td><td>Load a .badrc config file</td></tr>
+        <tr><td>--log-level &lt;level&gt;</td><td>Log verbosity: debug, info, warn, error</td></tr>
+        <tr><td>--color &lt;mode&gt;</td><td>Color output: always, never, auto</td></tr>
+      </table>
+
+      <h3 id="cli-cookbook">Command Cookbook</h3>
+      <pre><code class="language-bad"># Simple run
+./bad examples/01-basics/quick_start_demo.bad
+
+# Debug: show request and response
+./bad file.bad --print-request --print-response
+
+# CI mode: no color, fail fast
+./bad file.bad --fail-fast --color never
+
+# Full output with timing
+./bad file.bad --verbose --show-time --show-timestamp
+
+# Save history for analysis
+./bad file.bad --save --save-steps
+
+# Save one history file per source file
+./bad file.bad --save --save-mode per-file
+
+# Save only failed tests and hide response bodies
+./bad file.bad --save --save-only-failed --no-save-response-body
+
+# Use staging server
+./bad file.bad --base https://staging.api.example.com</code></pre>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         OUTPUT MODES
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="output">
+      <h2>Output Modes <a class="anchor" href="#output">#</a></h2>
+
+      <div class="output-modes">
+        <div class="output-mode">
+          <h4>Default</h4>
+          <pre><code>◆ test "login"
+    OK status 200
+    OK json.token exists
+  OK (2/2 passed) [134ms]</code></pre>
+        </div>
+        <div class="output-mode">
+          <h4>Verbose (--verbose)</h4>
+          <pre><code>◆ test "get user"
+  response:
+  ├─ id: 1
+  ├─ name: "Krish"
+  └─ email: "k@example.com"</code></pre>
+        </div>
+        <div class="output-mode">
+          <h4>Flat (--flat)</h4>
+          <pre><code>user.id = 1
+user.name = "Krish"
+user.email = "k@example.com"</code></pre>
+        </div>
+        <div class="output-mode">
+          <h4>Table (--table)</h4>
+          <pre><code>id   name    email
+---- ------- ---------
+1    Krish   k@ex.com
+2    Alex    a@ex.com</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         CONFIG FILE
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="config">
+      <h2>Config File — <code>.badrc</code> <a class="anchor" href="#config">#</a></h2>
+      <p>A <code>.badrc</code> JSON file can set defaults for all options. CLI flags override config file values, which in turn override in-file defaults.</p>
+
+      <pre><code class="language-bad">{
+  "base_url":       "https://api.example.com",
+  "timeout":        10000,
+  "pretty_output":  true,
+  "save_history":   true,
+  "history_mode":   "all",
+  "history_methods": "",
+  "history_exclude_methods": "",
+  "history_only_failed": false,
+  "save_steps":     true,
+  "history_include_headers": true,
+  "history_include_request_body": true,
+  "history_include_response_body": true,
+  "history_max_body_bytes": 0,
+  "history_dir":    ".bad-history",
+  "history_file":   ".bad-history/all-runs.jsonl",
+  "history_format": "jsonl",
+  "print_request":  false,
+  "print_response": false,
+  "show_time":      false,
+  "show_timestamp": false,
+  "json_view":      false,
+  "json_pretty":    true,
+  "remember_token": false,
+  "use_color":      true,
+  "fail_fast":      false,
+  "log_level":      "info"
+}</code></pre>
+
+      <p>Use a config file:</p>
+      <pre><code class="language-bad">./bad file.bad --config .badrc
+./bad file.bad --config examples/.badrc</code></pre>
+
+      <div class="callout tip">
+        <strong>Precedence:</strong> CLI flags &gt; in-file settings &gt; <code>.badrc</code> defaults.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         HISTORY
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="history">
+      <h2>History <a class="anchor" href="#history">#</a></h2>
+      <p>With <code>--save</code>, bad writes a JSONL record for each test run. History files enable trend analysis, CI dashboards, and debugging.</p>
+
+      <h3 id="history-fields">Record Fields</h3>
+      <table class="keyword-table">
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td>schema</td><td>Schema version for the history format</td></tr>
+        <tr><td>id</td><td>Unique run identifier</td></tr>
+        <tr><td>timestamp</td><td>ISO 8601 wall clock time</td></tr>
+        <tr><td>source_file</td><td>Source <code>.bad</code> file path</td></tr>
+        <tr><td>test</td><td>Test name</td></tr>
+        <tr><td>test_failed</td><td>Whether the test failed</td></tr>
+        <tr><td>request</td><td>Full outgoing request snapshot</td></tr>
+        <tr><td>response</td><td>Full response snapshot</td></tr>
+        <tr><td>steps</td><td>Step timeline (if --save-steps)</td></tr>
+      </table>
+
+      <h3 id="history-controls">Advanced Controls</h3>
+      <ul>
+        <li><code>history_mode</code>: <code>all</code>, <code>per-file</code>, <code>per-test</code>, <code>off</code></li>
+        <li><code>history_methods</code>: include only these methods (CSV)</li>
+        <li><code>history_exclude_methods</code>: exclude these methods (CSV)</li>
+        <li><code>history_only_failed</code>: save only failed test records</li>
+        <li><code>history_include_headers</code>: include/omit request headers</li>
+        <li><code>history_include_request_body</code>: include/omit request body</li>
+        <li><code>history_include_response_body</code>: include/omit response body</li>
+        <li><code>history_max_body_bytes</code>: truncate saved body payload size</li>
+      </ul>
+
+      <h3 id="history-usage">Usage</h3>
+      <pre><code class="language-bad">./bad file.bad --save
+./bad file.bad --save --save-steps
+./bad file.bad --save --save-dir .history
+./bad file.bad --save --save-file .bad-history/run.jsonl
+./bad file.bad --save --save-mode per-file
+./bad file.bad --save --save-mode per-test --save-dir .history
+./bad file.bad --save --save-methods GET,POST
+./bad file.bad --save --save-only-failed --no-save-response-body
+./bad file.bad --save --save-max-body-bytes 2048</code></pre>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         KEYWORD REFERENCE
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="keywords">
+      <h2>Keyword Reference <a class="anchor" href="#keywords">#</a></h2>
+
+      <h3 id="kw-primary">Primary Keywords</h3>
+      <table class="keyword-table">
+        <tr><th>Keyword</th><th>Usage</th><th>Description</th></tr>
+        <tr><td>test</td><td>test "name" { ... }</td><td>Define a test block</td></tr>
+        <tr><td>send</td><td>send GET "/path"</td><td>Send an HTTP request</td></tr>
+        <tr><td>expect / assert</td><td>expect status 200</td><td>Assert a condition</td></tr>
+        <tr><td>let</td><td>let x = json.token</td><td>Declare a variable</td></tr>
+        <tr><td>print</td><td>print x</td><td>Print a value to output</td></tr>
+        <tr><td>import / use</td><td>import "file.bad"</td><td>Import another file</td></tr>
+        <tr><td>export</td><td>export let x = 1</td><td>Export variable or template</td></tr>
+        <tr><td>request / req / template</td><td>template name { ... }</td><td>Define a request template</td></tr>
+        <tr><td>group</td><td>group "name" { ... }</td><td>Group related tests</td></tr>
+        <tr><td>before_all</td><td>before_all { ... }</td><td>Suite setup hook</td></tr>
+        <tr><td>before_each</td><td>before_each { ... }</td><td>Per-test setup hook</td></tr>
+        <tr><td>after_each</td><td>after_each { ... }</td><td>Per-test teardown hook</td></tr>
+        <tr><td>after_all</td><td>after_all { ... }</td><td>Suite teardown hook</td></tr>
+        <tr><td>on_error</td><td>on_error { ... }</td><td>Runs on assertion/network failures</td></tr>
+        <tr><td>on_assertion_error</td><td>on_assertion_error { ... }</td><td>Runs on assertion failures</td></tr>
+        <tr><td>on_network_error</td><td>on_network_error { ... }</td><td>Runs on network failures</td></tr>
+        <tr><td>before_url / after_url / on_url_error</td><td>before_url "/*" { ... }</td><td>URL wildcard hooks</td></tr>
+        <tr><td>skip</td><td>skip test "name" because "reason"</td><td>Skip a named test</td></tr>
+        <tr><td>skip_if</td><td>skip_if status != 200 because "reason"</td><td>Conditionally skip current test</td></tr>
+        <tr><td>fail_if</td><td>fail_if status >= 500 because "reason"</td><td>Conditionally fail current test</td></tr>
+        <tr><td>only</td><td>only test "name"</td><td>Run only selected items</td></tr>
+        <tr><td>because</td><td>stop because "reason"</td><td>Attach a reason string</td></tr>
+        <tr><td>with</td><td>send req name with { ... }</td><td>Override template fields</td></tr>
+        <tr><td>if / else_if / else</td><td>if status == 200 { ... }</td><td>Conditional branching</td></tr>
+        <tr><td>and / or / not</td><td>if x and not y { ... }</td><td>Logical operators</td></tr>
+        <tr><td>retry</td><td>retry 3</td><td>Set retry count for request</td></tr>
+        <tr><td>body_merge / merge_body</td><td>body_merge true</td><td>Merge template body defaults with override body</td></tr>
+        <tr><td>sleep</td><td>sleep 250</td><td>Pause N milliseconds</td></tr>
+        <tr><td>stop</td><td>stop because "reason"</td><td>Exit current test</td></tr>
+        <tr><td>stop_all</td><td>stop_all because "reason"</td><td>Abort file execution</td></tr>
+        <tr><td>bearer</td><td>let auth = bearer token</td><td>Prepend "Bearer " prefix</td></tr>
+        <tr><td>env</td><td>let x = env VAR_NAME</td><td>Read environment variable</td></tr>
+        <tr><td>args</td><td>let x = args 0</td><td>Read positional CLI arg</td></tr>
+        <tr><td>time_start</td><td>time_start name</td><td>Start named timer</td></tr>
+        <tr><td>time_stop</td><td>time_stop name</td><td>Stop named timer</td></tr>
+        <tr><td>time</td><td>expect time name &lt; 2000</td><td>Reference timer value</td></tr>
+        <tr><td>time_ms</td><td>let t = time_ms</td><td>Last request duration in ms</td></tr>
+        <tr><td>now_ms</td><td>let t = now_ms</td><td>Current epoch ms</td></tr>
+      </table>
+
+      <h3 id="kw-aliases">Keyword Aliases</h3>
+      <table class="keyword-table">
+        <tr><th>Alias</th><th>Canonical</th></tr>
+        <tr><td>use</td><td>import</td></tr>
+        <tr><td>assert</td><td>expect</td></tr>
+        <tr><td>req</td><td>request</td></tr>
+        <tr><td>template</td><td>request</td></tr>
+        <tr><td>payload</td><td>body</td></tr>
+        <tr><td>headers</td><td>header</td></tr>
+        <tr><td>base</td><td>base_url</td></tr>
+        <tr><td>wait</td><td>timeout</td></tr>
+      </table>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         EXAMPLES
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="examples">
+      <h2>Example Files <a class="anchor" href="#examples">#</a></h2>
+      <p>The <code>examples/</code> directory in the repo includes ready-to-run examples:</p>
+
+      <table class="keyword-table">
+        <tr><th>File</th><th>What it demonstrates</th></tr>
+        <tr><td>demo.bad</td><td>CRUD tests against jsonplaceholder — start here</td></tr>
+        <tr><td>auth.bad</td><td>Login flow, token capture, authenticated requests</td></tr>
+        <tr><td>advanced_features.bad</td><td>String operators, <code>in</code>, retry backoff, env/args, timers</td></tr>
+        <tr><td>testing_suite.bad</td><td>Import-driven test suite composition</td></tr>
+        <tr><td>benchmark.bad</td><td>Benchmark run with timing</td></tr>
+        <tr><td>crud.bad</td><td>Full CRUD workflow in one file</td></tr>
+        <tr><td>group_before_with.bad</td><td>Groups, hooks, and template override</td></tr>
+        <tr><td>object_template_hooks.bad</td><td>Object spread vars, template inline expects, and URL/error hooks</td></tr>
+        <tr><td>regression_hooks_objects_templates.bad</td><td>Deterministic localhost regression for hooks/object/template behavior</td></tr>
+        <tr><td>export_templates.bad</td><td>Exporting templates for reuse</td></tr>
+        <tr><td>import_shared.bad</td><td>Importing shared variables</td></tr>
+        <tr><td>selective_import_demo.bad</td><td>only/alias imports</td></tr>
+        <tr><td>skip_only_group_scope.bad</td><td>skip/only with group scoping</td></tr>
+      </table>
+
+      <h3 id="examples-run">Running Examples</h3>
+      <pre><code class="language-bad"># First run
+./bad examples/01-basics/quick_start_demo.bad
+
+# Advanced features
+./bad examples/04-runtime/advanced_runtime_controls.bad --verbose
+
+# Deterministic regression
+./bad examples/03-hooks-and-flow/regression_object_template_hooks.bad
+
+# With config
+./bad examples/01-basics/quick_start_demo.bad --config examples/.badrc
+
+# Debug
+./bad examples/01-basics/auth_header_template.bad --print-request --print-response</code></pre>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         EXIT CODES
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="exit-codes">
+      <h2>Exit Codes <a class="anchor" href="#exit-codes">#</a></h2>
+      <table class="keyword-table">
+        <tr><th>Code</th><th>Meaning</th></tr>
+        <tr><td>0</td><td>All assertions passed — success</td></tr>
+        <tr><td>1</td><td>One or more assertions failed</td></tr>
+      </table>
+      <p>Use exit codes in CI pipelines to gate deployments on test results.</p>
+      <pre><code class="language-bad">./bad tests/smoke.bad && echo "✓ tests passed" || echo "✗ tests failed"</code></pre>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         TROUBLESHOOTING
+    ════════════════════════════════════════ -->
+    <div class="doc-section" id="troubleshoot">
+      <h2>Troubleshooting <a class="anchor" href="#troubleshoot">#</a></h2>
+
+      <h3 id="ts-build">Build Failures</h3>
+      <pre><code class="language-bad">make clean && make</code></pre>
+      <p>Ensure <code>libcurl</code> development libraries are installed. On Debian/Ubuntu: <code>sudo apt install libcurl4-openssl-dev</code>.</p>
+
+      <h3 id="ts-timeout">Timeout Errors</h3>
+      <p>Increase the timeout in your file or via CLI:</p>
+      <pre><code class="language-bad">timeout = 30000             # in file
+./bad file.bad --timeout 30000   # via CLI</code></pre>
+
+      <h3 id="ts-import">Import Not Found</h3>
+      <p>Import paths are resolved relative to the current working directory where bad is invoked — not relative to the importing file. Use correct relative paths.</p>
+
+      <h3 id="ts-json">Assertion Path Not Found</h3>
+      <p>Use <code>--print-response</code> or <code>--json-pretty</code> to inspect the actual response shape:</p>
+      <pre><code class="language-bad">./bad file.bad --print-response --json-pretty</code></pre>
+
+      <h3 id="ts-faq">FAQ</h3>
+      <ul>
+        <li><strong>Is <code>send request</code> the same as <code>send req</code>?</strong> Yes. <code>send template</code> is also accepted.</li>
+        <li><strong>Can I use a variable as a request path?</strong> Yes — <code>send GET user_path</code> works.</li>
+        <li><strong>How do I merge template body defaults with overrides?</strong> Use <code>body_merge true</code> (or <code>merge_body true</code>) inside <code>send req ... with { ... }</code>.</li>
+        <li><strong>Can I skip a test without a block?</strong> Yes — <code>skip test "name" because "reason"</code>.</li>
+        <li><strong>Can I run against a local server?</strong> Yes — set <code>base_url</code> to your local address.</li>
+        <li><strong>Can I pass secrets via environment?</strong> Yes — <code>let key = env API_KEY</code> reads from the process environment.</li>
+        <li><strong>How do I run only one test?</strong> Use <code>only test "name"</code> at the top of the file.</li>
+      </ul>
+    </div>
+
+  </main>
+</div>
+
+<!-- ─── Footer ────────────────────────────────── -->
+<footer class="footer"></footer>
+
+<script src="js/utils.js"></script>
+<script src="js/common.js"></script>
+<script src="js/docs.js"></script>
+</body>
+</html>

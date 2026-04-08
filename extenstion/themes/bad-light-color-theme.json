@@ -1,0 +1,42 @@
+{
+  "name": "BAD Paper Light",
+  "type": "light",
+  "colors": {
+    "editor.background": "#fffdf8",
+    "editor.foreground": "#1f2937",
+    "editorLineNumber.foreground": "#9ca3af",
+    "editorLineNumber.activeForeground": "#4b5563",
+    "editorCursor.foreground": "#dc2626",
+    "editor.selectionBackground": "#fde68a66",
+    "sideBar.background": "#f9fafb",
+    "activityBar.background": "#f3f4f6",
+    "statusBar.background": "#e5e7eb",
+    "statusBar.foreground": "#111827"
+  },
+  "tokenColors": [
+    {
+      "scope": "comment",
+      "settings": { "foreground": "#6b7280", "fontStyle": "italic" }
+    },
+    {
+      "scope": "keyword.control.bad",
+      "settings": { "foreground": "#0f766e", "fontStyle": "bold" }
+    },
+    {
+      "scope": "support.type.http-method.bad",
+      "settings": { "foreground": "#b45309", "fontStyle": "bold" }
+    },
+    {
+      "scope": "string",
+      "settings": { "foreground": "#166534" }
+    },
+    {
+      "scope": "constant.numeric",
+      "settings": { "foreground": "#a16207" }
+    },
+    {
+      "scope": "keyword.operator.bad",
+      "settings": { "foreground": "#be123c" }
+    }
+  ]
+}

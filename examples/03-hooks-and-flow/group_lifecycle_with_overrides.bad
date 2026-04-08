@@ -1,0 +1,52 @@
+# File: group_lifecycle_with_overrides.bad
+# Author: clixiya
+# Purpose: Teach suite lifecycle hooks with request template override usage.
+# Flow:
+# - Define one reusable request template.
+# - Track suite lifecycle with before/after hooks.
+# - Override template path in-group with `with { path ... }`.
+# Features:
+# - before_all/before_each/after_each/after_all hooks
+# - group-scoped test flow
+# - template override at send site
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+request fetch_user {
+  method GET
+  path "/users/1"
+  expect status 200
+}
+
+before_all {
+  print "group_before_with: suite start"
+}
+
+before_each {
+  print "group_before_with: before_each"
+}
+
+after_each {
+  print "group_before_with: after_each"
+}
+
+after_all {
+  print "group_before_with: suite end"
+}
+
+group "template overrides" {
+  test "default path" {
+    send req fetch_user
+    expect status 200
+    expect json.id == 1
+  }
+
+  test "override to second user" {
+    send req fetch_user with {
+      path "/users/2"
+    }
+
+    expect status 200
+    expect json.id == 2
+  }
+}

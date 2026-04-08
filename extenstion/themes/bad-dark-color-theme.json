@@ -1,0 +1,42 @@
+{
+  "name": "BAD Night Shift",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#0d1016",
+    "editor.foreground": "#d8e0ea",
+    "editorLineNumber.foreground": "#4e5a6c",
+    "editorLineNumber.activeForeground": "#96a3b8",
+    "editorCursor.foreground": "#f8b700",
+    "editor.selectionBackground": "#2a3652",
+    "sideBar.background": "#101624",
+    "activityBar.background": "#0b1220",
+    "statusBar.background": "#14213d",
+    "statusBar.foreground": "#edf2f4"
+  },
+  "tokenColors": [
+    {
+      "scope": "comment",
+      "settings": { "foreground": "#6a7486", "fontStyle": "italic" }
+    },
+    {
+      "scope": "keyword.control.bad",
+      "settings": { "foreground": "#4cc9f0", "fontStyle": "bold" }
+    },
+    {
+      "scope": "support.type.http-method.bad",
+      "settings": { "foreground": "#f8961e", "fontStyle": "bold" }
+    },
+    {
+      "scope": "string",
+      "settings": { "foreground": "#90be6d" }
+    },
+    {
+      "scope": "constant.numeric",
+      "settings": { "foreground": "#f9c74f" }
+    },
+    {
+      "scope": "keyword.operator.bad",
+      "settings": { "foreground": "#f94144" }
+    }
+  ]
+}

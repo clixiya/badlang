@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <path d="M6 2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#111016" stroke="#8eff7a" stroke-width="0.6"/>
+  <path d="M15 2l5 5h-5z" fill="#8eff7a" opacity="0.85"/>
+  <rect x="7.3" y="8.7" width="9.4" height="6.4" rx="1.2" fill="#1d2a1a" stroke="#8eff7a" stroke-width="0.6"/>
+  <path d="M9 10.3l1.5 1.5-1.5 1.5M12 13.3h2.8" stroke="#c6ffbf" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="12" y="21.5" text-anchor="middle" font-family="monospace" font-size="3.8" font-weight="700" fill="#8eff7a">SH</text>
+</svg>

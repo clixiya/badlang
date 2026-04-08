@@ -1,0 +1,33 @@
+# File: shared_exports.bad
+# Author: clixiya
+# Purpose: Shared import source with stable exports for suite composition.
+# Flow:
+# - Export request paths.
+# - Export request templates.
+# - Keep symbols stable for dependent files.
+# Features:
+# - export variable + request templates
+# - deterministic shared source for imports
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+export let shared_user_path = "/users/1"
+export let shared_todo_path = "/todos/1"
+
+export request shared_user {
+  method GET
+  path shared_user_path
+  expect status 200
+}
+
+export request shared_todo {
+  method GET
+  path shared_todo_path
+  expect status 200
+}
+
+test "shared source self-check" {
+  send req shared_user
+  expect status 200
+  expect json.id == 1
+}

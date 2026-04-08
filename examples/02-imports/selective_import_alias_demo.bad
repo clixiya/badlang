@@ -1,0 +1,21 @@
+# File: selective_import_alias_demo.bad
+# Author: clixiya
+# Purpose: Demonstrate selective import of specific symbols with request aliasing.
+# Flow:
+# - Import only the symbols needed for this file.
+# - Alias a request template name.
+# - Execute the aliased request.
+# Features:
+# - import ... only ...
+# - request aliasing in imports
+
+import "examples/02-imports/selective_source.bad" only api_users, list_users as users_tpl
+
+test "selective import request" {
+  send req users_tpl with {
+    path api_users
+  }
+
+  expect status 200
+  expect json.id == 1
+}

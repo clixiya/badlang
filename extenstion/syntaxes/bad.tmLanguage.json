@@ -1,0 +1,99 @@
+{
+  "name": "BAD",
+  "scopeName": "source.bad",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#keywords" },
+    { "include": "#methods" },
+    { "include": "#variables" },
+    { "include": "#jsonKeys" },
+    { "include": "#operators" },
+    { "include": "#constants" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.bad",
+          "match": "#.*$"
+        },
+        {
+          "name": "comment.line.double-slash.bad",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.bad",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.bad",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.bad", "match": "\\\\." }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.bad", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.bad",
+          "match": "\\b(test|group|before_all|before_each|after_each|after_all|on_error|on_assertion_error|on_network_error|before_url|after_url|on_url_error|skip|skip_if|fail_if|only|because|import|use|export|let|print|send|expect|assert|request|req|template|method|path|with|body_merge|merge_body|if|and|or|not|else|else_if|contains|starts_with|ends_with|regex|in|retry|retry_count|retry_delay_ms|retry_backoff|retry_jitter_ms|sleep|stop|stop_all|body|payload|header|headers|status|json|exists|base|base_url|wait|timeout|save_history|save_steps|print_request|print_response|show_time|show_timestamp|json_view|json_pretty|flat|table|fail_fast|strict_runtime_errors|strict_runtime|remember_token|use_color|history_dir|history_file|history_format|history_mode|history_methods|history_exclude_methods|history_only_failed|history_include_headers|history_include_request_body|history_include_response_body|history_max_body_bytes|save_mode|save_methods|save_exclude_methods|save_only_failed|save_headers|save_request_body|save_response_body|save_max_body_bytes|log_level|only_req|only_import|as|bearer|env|args|time_start|time_stop|time|time_ms|now_ms|stats)\\b"
+        }
+      ]
+    },
+    "methods": {
+      "patterns": [
+        {
+          "name": "support.type.http-method.bad",
+          "match": "\\b(GET|POST|PUT|PATCH|DELETE)\\b"
+        }
+      ]
+    },
+    "variables": {
+      "patterns": [
+        {
+          "name": "variable.other.bad",
+          "match": "\\$[A-Za-z_][A-Za-z0-9_]*"
+        }
+      ]
+    },
+    "jsonKeys": {
+      "patterns": [
+        {
+          "name": "entity.name.tag.bad",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_\\-.]*(?=\\s*:)"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.bad",
+          "match": "==|!=|<=|>=|=|<|>|:"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.bad",
+          "match": "\\b(true|false|null)\\b"
+        }
+      ]
+    }
+  }
+}

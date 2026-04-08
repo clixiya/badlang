@@ -1,0 +1,42 @@
+# File: benchmark_baseline.bad
+# Author: clixiya
+# Purpose: Provide a lightweight timing baseline across common endpoints.
+# Flow:
+# - Hit several stable endpoints.
+# - Assert each response and latency.
+# - Print aggregate runtime stats.
+# Features:
+# - repeated endpoint checks
+# - latency assertions via time_ms
+# - stats namespace output
+
+base_url = "https://jsonplaceholder.typicode.com"
+timeout = 12000
+show_time = true
+
+test "bench users" {
+  send GET "/users/1"
+  expect status 200
+  expect json.id == 1
+  expect time_ms < 9000
+}
+
+test "bench todos" {
+  send GET "/todos/1"
+  expect status 200
+  expect json.id == 1
+  expect time_ms < 9000
+}
+
+test "bench posts" {
+  send GET "/posts/1"
+  expect status 200
+  expect json.id == 1
+  expect time_ms < 9000
+}
+
+after_all {
+  print stats.requests.total
+  print stats.requests.avg_time_ms
+  print stats.assertions.passed
+}

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <path d="M3 7.5a2 2 0 0 1 2-2h5l1.5 1.8H19a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#2a1808" stroke="#ff8e2b" stroke-width="0.8"/>
+  <path d="M3.7 9.2h16.6" stroke="#ff8e2b" stroke-width="0.8" opacity="0.7"/>
+  <text x="12" y="16.3" text-anchor="middle" font-family="monospace" font-size="4.2" font-weight="700" fill="#ffb46f">BAD</text>
+</svg>

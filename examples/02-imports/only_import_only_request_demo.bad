@@ -1,0 +1,22 @@
+# File: only_import_only_request_demo.bad
+# Author: clixiya
+# Purpose: Demonstrate how only-import and only-req filters narrow execution scope.
+# Flow:
+# - Lock imports to one source.
+# - Lock request execution focus.
+# - Execute a single focused template path.
+# Features:
+# - only import
+# - only req
+
+only import "examples/02-imports/shared_exports.bad"
+only req shared_user
+
+import "examples/02-imports/shared_exports.bad"
+import "examples/02-imports/selective_source.bad"
+
+test "focused import and request run" {
+  send req shared_user
+  expect status 200
+  expect json.id == 1
+}

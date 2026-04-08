@@ -1,0 +1,249 @@
+name: release-binaries
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish (example: v1.0.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  RELEASE_TAG: ${{ github.event_name == 'push' && github.ref_name || github.event.inputs.tag }}
+
+jobs:
+  build-linux-x64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcurl4-openssl-dev
+      - name: Build Linux x64 binary
+        run: |
+          set -euo pipefail
+          make clean && make
+          mkdir -p dist
+          cp bad dist/bad-linux-x64
+          chmod +x dist/bad-linux-x64
+      - name: Verify
+        run: |
+          file dist/bad-linux-x64
+          ./dist/bad-linux-x64 --help >/dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binaries-linux-x64
+          path: dist/bad-linux-x64
+
+  build-linux-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcurl4-openssl-dev
+      - name: Build Linux arm64 binary
+        run: |
+          set -euo pipefail
+          make clean && make
+          mkdir -p dist
+          cp bad dist/bad-linux-arm64
+          chmod +x dist/bad-linux-arm64
+      - name: Verify
+        run: |
+          file dist/bad-linux-arm64
+          ./dist/bad-linux-arm64 --help >/dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binaries-linux-arm64
+          path: dist/bad-linux-arm64
+
+  build-macos-x64:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - name: Build macOS x64 binary (cross-compile on ARM runner)
+        run: |
+          set -euo pipefail
+          make clean
+          make CC='cc -arch x86_64' CURL_CFLAGS='' CURL_LIBS='-lcurl'
+          mkdir -p dist
+          cp bad dist/bad-darwin-x64
+          chmod +x dist/bad-darwin-x64
+      - name: Verify architecture
+        run: lipo -archs dist/bad-darwin-x64 | grep -q 'x86_64'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binaries-darwin-x64
+          path: dist/bad-darwin-x64
+
+  build-macos-arm64:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - name: Build macOS arm64 binary
+        run: |
+          set -euo pipefail
+          make clean && make
+          mkdir -p dist
+          cp bad dist/bad-darwin-arm64
+          chmod +x dist/bad-darwin-arm64
+      - name: Verify
+        run: |
+          lipo -archs dist/bad-darwin-arm64 | grep -q 'arm64'
+          ./dist/bad-darwin-arm64 --help >/dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binaries-darwin-arm64
+          path: dist/bad-darwin-arm64
+
+  build-windows-x64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - name: Setup MSYS2 (UCRT64)
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            make
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-curl
+      - name: Build Windows x64 binary
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          make clean && make CC=gcc
+          mkdir -p dist
+          cp bad.exe dist/bad-win32-x64.exe
+      - name: Verify
+        shell: msys2 {0}
+        run: ./dist/bad-win32-x64.exe --help >/dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binaries-win32-x64
+          path: dist/bad-win32-x64.exe
+
+  build-windows-arm64:
+    # IMPORTANT: must use a native ARM64 runner.
+    # CLANGARM64 compiler binaries are native ARM64 executables;
+    # they cannot execute on x64 runners (windows-latest) — that
+    # was the "cannot execute binary file" error.
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - name: Verify ARM64 runner
+        shell: pwsh
+        run: |
+          $arch = $env:PROCESSOR_ARCHITECTURE
+          Write-Host "Runner PROCESSOR_ARCHITECTURE=$arch"
+          if ($arch -ne 'ARM64') {
+            throw "Expected ARM64 runner for CLANGARM64 build, got $arch"
+          }
+      - name: Setup MSYS2 (CLANGARM64)
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANGARM64
+          update: true
+          install: >-
+            make
+            mingw-w64-clang-aarch64-clang
+            mingw-w64-clang-aarch64-curl
+      - name: Build Windows arm64 binary
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          make clean && make CC=clang
+          mkdir -p dist
+          if [ -f bad.exe ]; then
+            cp bad.exe dist/bad-win32-arm64.exe
+          elif [ -f bad ]; then
+            cp bad dist/bad-win32-arm64.exe
+          else
+            echo "No output binary found"; ls -la; exit 1
+          fi
+      - name: Verify
+        shell: msys2 {0}
+        run: |
+          test -s dist/bad-win32-arm64.exe
+          ./dist/bad-win32-arm64.exe --help >/dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binaries-win32-arm64
+          path: dist/bad-win32-arm64.exe
+
+  publish-release:
+    needs:
+      - build-linux-x64
+      - build-linux-arm64
+      - build-macos-x64
+      - build-macos-arm64
+      - build-windows-x64
+      - build-windows-arm64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: binaries-linux-x64
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: binaries-linux-arm64
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: binaries-darwin-x64
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: binaries-darwin-arm64
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: binaries-win32-x64
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: binaries-win32-arm64
+          path: dist
+      - name: Generate checksums
+        run: |
+          set -euo pipefail
+          # Use sha256sum (standard on Linux/ubuntu-latest).
+          # shasum is macOS-only and not available on ubuntu runners.
+          (cd dist && sha256sum * > checksums.txt)
+          cat dist/checksums.txt
+      - name: Create or update GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            dist/bad-darwin-x64
+            dist/bad-darwin-arm64
+            dist/bad-linux-x64
+            dist/bad-linux-arm64
+            dist/bad-win32-x64.exe
+            dist/bad-win32-arm64.exe
+            dist/checksums.txt
+          fail_on_unmatched_files: true

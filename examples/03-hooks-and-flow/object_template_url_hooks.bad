@@ -1,0 +1,59 @@
+# File: object_template_url_hooks.bad
+# Author: clixiya
+# Purpose: Show object reuse with template overrides plus URL and error hooks.
+# Flow:
+# - Define reusable header and body objects.
+# - Execute a post template with body merge override.
+# - Observe URL hook prints around post requests.
+# Features:
+# - object variables in header/body
+# - template execution with body_merge
+# - before_url/after_url/on_error hooks
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+let common_headers = {
+  Accept: "application/json"
+  Content-Type: "application/json"
+  X-Client: "bad-examples"
+}
+
+let base_payload = {
+  title: "object-template-base"
+  body: "object-template-body"
+  userId: 1
+}
+
+request create_post_template {
+  method POST
+  path "/posts"
+  header common_headers
+  body base_payload
+  expect status in [201, 200]
+}
+
+before_url "*/posts*" {
+  print "object_template_hooks: before posts"
+}
+
+after_url "*/posts*" {
+  print "object_template_hooks: after posts"
+}
+
+on_error {
+  print "object_template_hooks: error hook"
+}
+
+test "object template with merged override" {
+  send req create_post_template with {
+    body_merge true
+    body {
+      base_payload
+      title: "object-template-override"
+    }
+  }
+
+  expect status in [201, 200]
+  expect json.id exists
+  expect json.title == "object-template-override"
+}

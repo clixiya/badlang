@@ -1,0 +1,63 @@
+# File: crud_operations.bad
+# Author: clixiya
+# Purpose: Demonstrate read/create/update/patch/delete style request shapes.
+# Flow:
+# - Read one existing post.
+# - Create a post.
+# - Update and patch an existing post.
+# - Delete an existing post.
+# Features:
+# - GET/POST/PUT/PATCH/DELETE coverage
+# - body and status assertions across verbs
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+test "read post" {
+  send GET "/posts/1"
+  expect status 200
+  expect json.id == 1
+}
+
+test "create post" {
+  send POST "/posts" {
+    body {
+      title: "crud-create"
+      body: "created in crud example"
+      userId: 1
+    }
+  }
+
+  expect status in [201, 200]
+  expect json.id exists
+  expect json.title == "crud-create"
+}
+
+test "put update post" {
+  send PUT "/posts/1" {
+    body {
+      id: 1
+      title: "crud-put"
+      body: "put update"
+      userId: 1
+    }
+  }
+
+  expect status in [200, 201]
+  expect json.title == "crud-put"
+}
+
+test "patch update post" {
+  send PATCH "/posts/1" {
+    body {
+      title: "crud-patch"
+    }
+  }
+
+  expect status in [200, 201]
+  expect json.title == "crud-patch"
+}
+
+test "delete post" {
+  send DELETE "/posts/1"
+  expect status in [200, 204]
+}

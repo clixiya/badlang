@@ -1,0 +1,35 @@
+# File: runtime_stats_report.bad
+# Author: clixiya
+# Purpose: Demonstrate runtime stats usage in assertions and prints.
+# Flow:
+# - Execute two stable requests.
+# - Validate aggregate stats values.
+# - Print key counters for visibility.
+# Features:
+# - stats namespace
+# - fail_if with runtime metrics
+# - printed aggregate counters
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+test "stats request one" {
+  send GET "/users/1"
+  expect status 200
+  expect json.id == 1
+}
+
+test "stats request two" {
+  send GET "/todos/1"
+  expect status 200
+  expect json.id == 1
+}
+
+test "stats sanity assertions" {
+  fail_if stats.requests.total < 2 because "expected at least two requests"
+  fail_if stats.assertions.passed < 4 because "expected at least four assertions"
+
+  print stats.requests.total
+  print stats.requests.avg_time_ms
+  print stats.assertions.passed
+  print stats.runtime.soft_errors
+}

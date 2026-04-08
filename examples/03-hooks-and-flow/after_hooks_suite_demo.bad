@@ -1,0 +1,37 @@
+# File: after_hooks_suite_demo.bad
+# Author: clixiya
+# Purpose: Demonstrate before/after hooks around a simple two-test flow.
+# Flow:
+# - Print suite start.
+# - Run two deterministic requests.
+# - Print post-test and suite-end hook output.
+# Features:
+# - before_all
+# - after_each
+# - after_all
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+before_all {
+  print "hooks_after_demo: suite start"
+}
+
+after_each {
+  print status
+}
+
+after_all {
+  print "hooks_after_demo: suite complete"
+}
+
+test "hooked user request" {
+  send GET "/users/1"
+  expect status 200
+  expect json.id == 1
+}
+
+test "hooked todo request" {
+  send GET "/todos/1"
+  expect status 200
+  expect json.id == 1
+}

@@ -1,0 +1,26 @@
+# File: compat_shared_template.bad
+# Author: clixiya
+# Purpose: Minimal compatibility import source for legacy command examples.
+# Flow:
+# - Export one stable path.
+# - Export one stable request template.
+# - Provide a local smoke test.
+# Features:
+# - tiny import source
+# - backwards-friendly naming
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+export let cool_user_path = "/users/1"
+
+export request cool_user {
+  method GET
+  path cool_user_path
+  expect status 200
+}
+
+test "cool shared smoke" {
+  send req cool_user
+  expect status 200
+  expect json.id == 1
+}

@@ -1,0 +1,25 @@
+# File: top_level_options_with_import.bad
+# Author: clixiya
+# Purpose: Show top-level runtime options applied with imported templates.
+# Flow:
+# - Configure runtime defaults at file top.
+# - Import shared request template.
+# - Execute template under configured runtime behavior.
+# Features:
+# - top-level timeout/retry/show_time options
+# - import + template execution
+
+base_url = "https://jsonplaceholder.typicode.com"
+timeout = 12000
+retry_count = 1
+retry_delay_ms = 100
+json_pretty = false
+show_time = true
+
+import "examples/02-imports/shared_exports.bad" only shared_user_path, shared_user
+
+test "top-level options with imported request" {
+  send req shared_user
+  expect status 200
+  expect json.id == 1
+}

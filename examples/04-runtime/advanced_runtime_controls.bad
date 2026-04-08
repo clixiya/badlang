@@ -1,0 +1,56 @@
+# File: advanced_runtime_controls.bad
+# Author: clixiya
+# Purpose: Demonstrate timers, string operators, branching, and retry settings.
+# Flow:
+# - Run a profile request with string checks.
+# - Run a timed todo request.
+# - Validate branch logic with explicit fail guard.
+# Features:
+# - retry_count/retry_delay_ms/retry_backoff/retry_jitter_ms
+# - time_start/time_stop + time/time_ms assertions
+# - contains/starts_with/ends_with/regex/in operators
+# - if/else + fail_if
+
+base_url = "https://jsonplaceholder.typicode.com"
+timeout = 12000
+retry_count = 2
+retry_delay_ms = 120
+retry_backoff = "exponential"
+retry_jitter_ms = 20
+
+before_all {
+  time_start suite_clock
+}
+
+after_all {
+  time_stop suite_clock
+  print time suite_clock
+}
+
+test "string operators and membership" {
+  send GET "/users/1"
+
+  expect status in [200, 201]
+  expect json.name contains "Leanne"
+  expect json.username starts_with "Br"
+  expect json.username ends_with "et"
+  expect json.username regex "^Bret$"
+}
+
+test "timers and branch guard" {
+  time_start request_clock
+  send GET "/todos/1"
+  time_stop request_clock
+
+  expect status 200
+  expect time_ms < 8000
+  expect time request_clock < 8000
+
+  if status == 200 and time_ms < 8000 {
+    print "timer/status guard passed"
+  } else {
+    fail_if true because "timer/status guard failed"
+  }
+
+  expect now_ms > 0
+}

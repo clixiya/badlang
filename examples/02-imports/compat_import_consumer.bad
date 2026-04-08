@@ -1,0 +1,18 @@
+# File: compat_import_consumer.bad
+# Author: clixiya
+# Purpose: Compatibility demo that consumes cool_shared exports.
+# Flow:
+# - Import shared template file.
+# - Execute imported request.
+# - Assert key response fields.
+# Features:
+# - basic import consumption
+# - imported request execution
+
+import "examples/02-imports/compat_shared_template.bad"
+
+test "cool import flow" {
+  send req cool_user
+  expect status 200
+  expect json.id == 1
+}

@@ -1,0 +1,22 @@
+# File: template_alias_import_demo.bad
+# Author: clixiya
+# Purpose: Show request alias import from a template module.
+# Flow:
+# - Selectively import a template and its dependency variable.
+# - Alias the template name to match local intent.
+# - Execute and assert response fields.
+# Features:
+# - selective import
+# - alias import for request templates
+
+import "examples/02-imports/reusable_templates.bad" only profile_path, load_profile as fetch_profile
+
+test "alias import request" {
+  send req fetch_profile with {
+    path profile_path
+  }
+
+  expect status 200
+  expect json.id == 1
+  expect json.username == "Bret"
+}

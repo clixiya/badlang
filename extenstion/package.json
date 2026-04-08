@@ -1,0 +1,329 @@
+{
+  "name": "bad-language-tools",
+  "displayName": "BAD Language Tools",
+  "description": "Language support for .bad API DSL: syntax highlighting, snippets, IntelliSense, hovers, symbols, diagnostics, themes, and icons.",
+  "version": "1.1.0",
+  "publisher": "clixiya",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clixiya/badlang"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Themes"
+  ],
+  "icon": "assets/logo.png",
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "bad",
+        "aliases": [
+          "BAD",
+          "bad"
+        ],
+        "extensions": [
+          ".bad"
+        ],
+        "filenames": [
+          ".badrc"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "bad",
+        "scopeName": "source.bad",
+        "path": "./syntaxes/bad.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "bad",
+        "path": "./snippets/bad.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "badLanguage.runCurrentFile",
+        "title": "BAD: Run",
+        "shortTitle": "Run"
+      },
+      {
+        "command": "badLanguage.runCurrentFileWithConfig",
+        "title": "BAD: Run Config",
+        "shortTitle": "Config"
+      },
+      {
+        "command": "badLanguage.runCurrentFileAuto",
+        "title": "BAD: Run File (Auto)",
+        "shortTitle": "Run Auto"
+      },
+      {
+        "command": "badLanguage.openSettingsPanel",
+        "title": "BAD: Settings",
+        "shortTitle": "Settings"
+      },
+      {
+        "command": "badLanguage.openRuntimeConfigPanel",
+        "title": "BAD: Runtime Config",
+        "shortTitle": "Runtime Config"
+      },
+      {
+        "command": "badLanguage.createExampleBadrc",
+        "title": "BAD: New .badrc"
+      },
+      {
+        "command": "badLanguage.useBadIconTheme",
+        "title": "BAD: Use Icons"
+      },
+      {
+        "command": "badLanguage.openExtensionReadme",
+        "title": "BAD: Open README"
+      },
+      {
+        "command": "badLanguage.refreshSidebar",
+        "title": "BAD: Refresh Sidebar"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceExtname == .bad",
+          "command": "badLanguage.runCurrentFile",
+          "group": "navigation@20"
+        },
+        {
+          "when": "resourceExtname == .bad",
+          "command": "badLanguage.runCurrentFileWithConfig",
+          "group": "navigation@21"
+        },
+        {
+          "when": "resourceExtname == .bad || resourceFilename == .badrc",
+          "command": "badLanguage.openSettingsPanel",
+          "group": "navigation@22"
+        },
+        {
+          "when": "resourceExtname == .bad || resourceFilename == .badrc",
+          "command": "badLanguage.openRuntimeConfigPanel",
+          "group": "navigation@23"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "badLanguage.openSettingsPanel",
+          "when": "true"
+        },
+        {
+          "command": "badLanguage.openRuntimeConfigPanel",
+          "when": "true"
+        },
+        {
+          "command": "badLanguage.createExampleBadrc",
+          "when": "true"
+        },
+        {
+          "command": "badLanguage.useBadIconTheme",
+          "when": "true"
+        },
+        {
+          "command": "badLanguage.openExtensionReadme",
+          "when": "true"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "badLanguage.refreshSidebar",
+          "when": "view == badSidebar.quickActions",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "badSidebar",
+          "title": "BAD",
+          "icon": "assets/logo.png"
+        }
+      ]
+    },
+    "views": {
+      "badSidebar": [
+        {
+          "id": "badSidebar.quickActions",
+          "name": "Quick Actions",
+          "icon": "assets/logo.png"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "BAD Language",
+      "properties": {
+        "badLanguage.defaultConfigPath": {
+          "type": "string",
+          "default": "examples/.badrc",
+          "description": "Default config path used by run commands."
+        },
+        "badLanguage.runBinaryPath": {
+          "type": "string",
+          "default": "./bad",
+          "description": "Executable path used by BAD run actions."
+        },
+        "badLanguage.runExtraArgs": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional CLI arguments appended to BAD run commands."
+        },
+        "badLanguage.runUseConfigByDefault": {
+          "type": "boolean",
+          "default": false,
+          "description": "When enabled, Run File actions include --config using defaultConfigPath."
+        },
+        "badLanguage.enableDiagnostics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable lightweight BAD diagnostics (e.g. unmatched braces)."
+        },
+        "badLanguage.diagnosticsTopLevelHeuristics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn on unknown top-level statements using heuristic checks."
+        },
+        "badLanguage.diagnosticsWarnNotAmbiguousNot": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn when using ambiguous conditions like not a == b."
+        },
+        "badLanguage.enableFormatting": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable BAD document formatting provider."
+        },
+        "badLanguage.formatterIndentSize": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 8,
+          "description": "Indent size used by BAD formatter."
+        },
+        "badLanguage.formatterWrapColumn": {
+          "type": "number",
+          "default": 100,
+          "minimum": 40,
+          "maximum": 220,
+          "description": "Target line width used when wrapping long logical conditions."
+        },
+        "badLanguage.formatterWrapLogicalConditions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Wrap long if/skip_if/fail_if logical expressions across lines."
+        },
+        "badLanguage.enableCompletions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable IntelliSense completions for BAD DSL."
+        },
+        "badLanguage.enableHovers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable hover documentation for BAD keywords and stats selectors."
+        },
+        "badLanguage.hoverShowExamples": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show usage examples in hover documentation."
+        },
+        "badLanguage.hoverShowRelated": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show related BAD keywords in hover documentation."
+        },
+        "badLanguage.hoverMaxRelated": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 12,
+          "description": "Maximum number of related keywords shown in hover."
+        },
+        "badLanguage.enableSignatures": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable signature help for send/expect/guard forms."
+        },
+        "badLanguage.enableSymbols": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable document symbol outline provider for BAD files."
+        },
+        "badLanguage.enableSemanticTokens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable semantic token coloring for BAD files."
+        },
+        "badLanguage.enableCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable code lens actions above test/group declarations."
+        },
+        "badLanguage.enableImportLinks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable clickable document links for import/use file paths."
+        },
+        "badLanguage.sidebarShowRunActions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show run actions in the BAD activity sidebar view."
+        },
+        "badLanguage.sidebarShowDocs": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show docs action in the BAD activity sidebar view."
+        },
+        "badLanguage.showFileDecorations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show BAD badge decoration in Explorer while keeping your current icon theme."
+        }
+      }
+    },
+    "iconThemes": [
+      {
+        "id": "bad-icons",
+        "label": "BAD File Icons",
+        "path": "./assets/icon-theme/bad-icon-theme.json"
+      }
+    ],
+    "themes": [
+      {
+        "label": "BAD Night Shift",
+        "uiTheme": "vs-dark",
+        "path": "./themes/bad-dark-color-theme.json"
+      },
+      {
+        "label": "BAD Paper Light",
+        "uiTheme": "vs",
+        "path": "./themes/bad-light-color-theme.json"
+      }
+    ]
+  },
+  "scripts": {
+    "check": "node --check extension.js",
+    "validate:assets": "node scripts/validate-extension-assets.js",
+    "test": "npm run check && npm run validate:assets",
+    "package": "mkdir -p dist && npx @vscode/vsce package --allow-missing-repository --out dist/bad-language-tools-${npm_package_version}.vsix",
+    "lint": "npm run test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.90.0"
+  }
+}

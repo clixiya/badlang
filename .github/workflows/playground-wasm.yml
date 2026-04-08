@@ -1,0 +1,139 @@
+name: playground-wasm
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "src/**"
+      - "include/**"
+      - "web/playground.html"
+      - "web/js/playground.js"
+      - ".github/workflows/playground-wasm.yml"
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy website with updated WASM runtime to GitHub Pages"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  build-wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.64
+
+      - name: Build BAD WebAssembly runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p web/dist
+
+          cat > /tmp/bad_http_stub.c <<'EOF'
+          #include <stdlib.h>
+          #include <string.h>
+          #include "bad.h"
+          #include "bad_platform.h"
+
+          static char *bad_dup(const char *s) {
+            size_t len = strlen(s);
+            char *out = (char *)malloc(len + 1);
+            if (!out) return NULL;
+            memcpy(out, s, len + 1);
+            return out;
+          }
+
+          Response http_request(const char *method, const char *url,
+                                const char *body_json,
+                                const char **hdr_keys,
+                                const char **hdr_vals,
+                                int hdr_count,
+                                int timeout_ms) {
+            (void)method;
+            (void)url;
+            (void)body_json;
+            (void)hdr_keys;
+            (void)hdr_vals;
+            (void)hdr_count;
+            (void)timeout_ms;
+
+            Response resp = {0, NULL, 0};
+            resp.status = -1;
+            resp.body = bad_dup("{\"error\":\"HTTP is not available in browser WASM build\"}");
+            return resp;
+          }
+
+          void response_free(Response *r) {
+            if (r && r->body) {
+              free(r->body);
+              r->body = NULL;
+            }
+          }
+          EOF
+
+          emcc -std=c11 -O3 -Iinclude \
+            src/main.c src/lexer.c src/parser.c src/runtime.c src/vars.c src/json_helpers.c /tmp/bad_http_stub.c \
+            -s WASM=1 \
+            -s MODULARIZE=1 \
+            -s EXPORT_ES6=1 \
+            -s EXPORT_NAME=createBadModule \
+            -s FORCE_FILESYSTEM=1 \
+            -s NO_EXIT_RUNTIME=1 \
+            -s ALLOW_MEMORY_GROWTH=1 \
+            -s EXPORTED_FUNCTIONS='["_main"]' \
+            -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap","FS","callMain"]' \
+            -o web/dist/bad.js
+
+      - name: Upload wasm playground artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-playground
+          path: web/dist
+
+  deploy-pages:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.deploy == 'true' }}
+    needs: build-wasm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download wasm playground artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-playground
+          path: tmp/wasm-playground-dist
+
+      - name: Merge wasm playground into website
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf web/dist
+          mkdir -p web/dist
+          cp -R tmp/wasm-playground-dist/* web/dist/
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

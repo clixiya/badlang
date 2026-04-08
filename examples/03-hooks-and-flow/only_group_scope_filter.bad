@@ -1,0 +1,27 @@
+# File: only_group_scope_filter.bad
+# Author: clixiya
+# Purpose: Show how only-group limits execution to a selected group.
+# Flow:
+# - Declare only-group target.
+# - Run one focused smoke group.
+# - Keep the file minimal and parser-safe.
+# Features:
+# - only group filter
+# - group-level execution scoping
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+only group "focused smoke" {
+  test "focused user" {
+    send GET "/users/1"
+    expect status 200
+    expect json.id == 1
+  }
+
+  test "focused todo" {
+    send GET "/todos/1"
+    expect status 200
+    expect json.id == 1
+  }
+}
+

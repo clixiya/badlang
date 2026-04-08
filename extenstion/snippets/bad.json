@@ -1,0 +1,1159 @@
+{
+    "Test: Basic": {
+        "prefix": "btest",
+        "body": [
+            "test \"${1:name}\" {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Create a standard test block"
+    },
+    "Test: Focused": {
+        "prefix": "btestonly",
+        "body": [
+            "only test \"${1:name}\" {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Run only one test"
+    },
+    "Test: Skipped": {
+        "prefix": "btestskip",
+        "body": [
+            "skip test \"${1:name}\" because \"${2:reason}\""
+        ],
+        "description": "Skip a test with a reason"
+    },
+    "Group: Basic": {
+        "prefix": "bgroup",
+        "body": [
+            "group \"${1:name}\" {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Create a group block"
+    },
+    "Group: Focused": {
+        "prefix": "bgrouponly",
+        "body": [
+            "only group \"${1:name}\" {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Run only one group"
+    },
+    "Group: Skipped": {
+        "prefix": "bgroupskip",
+        "body": [
+            "skip group \"${1:name}\" because \"${2:reason}\""
+        ],
+        "description": "Skip a group with a reason"
+    },
+    "Hook: before_all": {
+        "prefix": "bbeforeall",
+        "body": [
+            "before_all {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Add before_all hook"
+    },
+    "Hook: before_each": {
+        "prefix": "bbeforeeach",
+        "body": [
+            "before_each {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Add before_each hook"
+    },
+    "Hook: after_each": {
+        "prefix": "baftereach",
+        "body": [
+            "after_each {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Add after_each hook"
+    },
+    "Hook: after_all": {
+        "prefix": "bafterall",
+        "body": [
+            "after_all {",
+            "\t$0",
+            "}"
+        ],
+        "description": "Add after_all hook"
+    },
+    "Hook: on_error": {
+        "prefix": "bonerror",
+        "body": [
+            "on_error {",
+            "\tprint \"${1:error detected}\"",
+            "\t$0",
+            "}"
+        ],
+        "description": "Handle assertion or network errors"
+    },
+    "Hook: on_assertion_error": {
+        "prefix": "bonassert",
+        "body": [
+            "on_assertion_error {",
+            "\tprint stats.assertions.failed",
+            "\t$0",
+            "}"
+        ],
+        "description": "Handle assertion failures"
+    },
+    "Hook: on_network_error": {
+        "prefix": "bonnetwork",
+        "body": [
+            "on_network_error {",
+            "\tprint stats.requests.network_failures",
+            "\t$0",
+            "}"
+        ],
+        "description": "Handle network failures"
+    },
+    "Hook: before_url": {
+        "prefix": "bbeforeurl",
+        "body": [
+            "before_url \"${1:/*}\" {",
+            "\ttime_start ${2:request_span}",
+            "\t$0",
+            "}"
+        ],
+        "description": "Run before matching URL"
+    },
+    "Hook: after_url": {
+        "prefix": "bafterurl",
+        "body": [
+            "after_url \"${1:/*}\" {",
+            "\ttime_stop ${2:request_span}",
+            "\t$0",
+            "}"
+        ],
+        "description": "Run after matching URL"
+    },
+    "Hook: on_url_error": {
+        "prefix": "bonurlerror",
+        "body": [
+            "on_url_error \"${1:/*}\" {",
+            "\tprint \"${2:url rule failed}\"",
+            "\t$0",
+            "}"
+        ],
+        "description": "Handle failures for matching URL"
+    },
+    "Request Template: Basic": {
+        "prefix": "reqtpl",
+        "body": [
+            "request ${1:name} {",
+            "\tmethod ${2|GET,POST,PUT,PATCH,DELETE|}",
+            "\tpath \"${3:/path}\"",
+            "\t$0",
+            "}"
+        ],
+        "description": "Create a reusable request template"
+    },
+    "Request Template: Auth GET": {
+        "prefix": "reqauthget",
+        "body": [
+            "request ${1:get_profile} {",
+            "\tmethod GET",
+            "\tpath \"${2:/me}\"",
+            "\tbearer env ${3:API_TOKEN}",
+            "\texpect status 200",
+            "\t$0",
+            "}"
+        ],
+        "description": "GET template with bearer auth"
+    },
+    "Request Template: JSON POST": {
+        "prefix": "reqjsonpost",
+        "body": [
+            "request ${1:create_item} {",
+            "\tmethod POST",
+            "\tpath \"${2:/items}\"",
+            "\theader Content-Type: \"application/json\"",
+            "\tbody {",
+            "\t\t${3:name}: \"${4:value}\"",
+            "\t}",
+            "\texpect status ${5:201}",
+            "\t$0",
+            "}"
+        ],
+        "description": "POST template with JSON body"
+    },
+    "Template Alias: Basic": {
+        "prefix": "tplbasic",
+        "body": [
+            "template ${1:name} {",
+            "\tmethod ${2|GET,POST,PUT,PATCH,DELETE|}",
+            "\tpath \"${3:/path}\"",
+            "\t$0",
+            "}"
+        ],
+        "description": "Create template alias block"
+    },
+    "Export Request": {
+        "prefix": "exportreq",
+        "body": [
+            "export request ${1:name} {",
+            "\tmethod ${2|GET,POST,PUT,PATCH,DELETE|}",
+            "\tpath \"${3:/path}\"",
+            "\t$0",
+            "}"
+        ],
+        "description": "Export a request template"
+    },
+    "Export Variable": {
+        "prefix": "exportlet",
+        "body": [
+            "export let ${1:key} = ${2:env API_KEY}"
+        ],
+        "description": "Export a reusable variable"
+    },
+    "Send: Direct GET": {
+        "prefix": "sendget",
+        "body": [
+            "send GET \"${1:/path}\"",
+            "$0"
+        ],
+        "description": "Send simple GET request"
+    },
+    "Send: Direct POST JSON": {
+        "prefix": "sendpostjson",
+        "body": [
+            "send POST \"${1:/path}\" {",
+            "\theader Content-Type: \"application/json\"",
+            "\tbody {",
+            "\t\t${2:key}: \"${3:value}\"",
+            "\t}",
+            "\t$0",
+            "}"
+        ],
+        "description": "Send POST with JSON body"
+    },
+    "Send: Direct PATCH": {
+        "prefix": "sendpatch",
+        "body": [
+            "send PATCH \"${1:/path}\" {",
+            "\tbody {",
+            "\t\t${2:key}: \"${3:value}\"",
+            "\t}",
+            "\t$0",
+            "}"
+        ],
+        "description": "Send PATCH with body"
+    },
+    "Send: Direct DELETE": {
+        "prefix": "senddelete",
+        "body": [
+            "send DELETE \"${1:/path}\"",
+            "$0"
+        ],
+        "description": "Send DELETE request"
+    },
+    "Send: Request Template": {
+        "prefix": "sendreq",
+        "body": [
+            "send req ${1:template_name}",
+            "$0"
+        ],
+        "description": "Execute request template"
+    },
+    "Send: Template With Override": {
+        "prefix": "sendtplwith",
+        "body": [
+            "send template ${1:template_name} with {",
+            "\tpath \"${2:/override}\"",
+            "\t$0",
+            "}"
+        ],
+        "description": "Run template with inline overrides"
+    },
+    "Send: Template With Body Merge": {
+        "prefix": "sendtplmerge",
+        "body": [
+            "send req ${1:template_name} with {",
+            "\tbody_merge true",
+            "\tbody {",
+            "\t\t${2:key}: \"${3:value}\"",
+            "\t}",
+            "\t$0",
+            "}"
+        ],
+        "description": "Run template and merge override body"
+    },
+    "Send: With Headers": {
+        "prefix": "sendheaders",
+        "body": [
+            "send ${1|GET,POST,PUT,PATCH,DELETE|} \"${2:/path}\" {",
+            "\theader ${3:Accept}: \"${4:application/json}\"",
+            "\theader ${5:X-Request-Id}: \"${6:req-123}\"",
+            "\t$0",
+            "}"
+        ],
+        "description": "Send request with custom headers"
+    },
+    "Send: With Timeout": {
+        "prefix": "sendtimeout",
+        "body": [
+            "send ${1|GET,POST,PUT,PATCH,DELETE|} \"${2:/path}\" {",
+            "\ttimeout ${3:5000}",
+            "\t$0",
+            "}"
+        ],
+        "description": "Send request with per-call timeout"
+    },
+    "Send: With Retry Controls": {
+        "prefix": "sendretry",
+        "body": [
+            "send ${1|GET,POST,PUT,PATCH,DELETE|} \"${2:/path}\" {",
+            "\tretry ${3:2}",
+            "\tretry_delay_ms ${4:200}",
+            "\tretry_backoff ${5:2}",
+            "\tretry_jitter_ms ${6:100}",
+            "\t$0",
+            "}"
+        ],
+        "description": "Send request with retry settings"
+    },
+    "Send: Bearer Shortcut": {
+        "prefix": "sendbearer",
+        "body": [
+            "send ${1|GET,POST,PUT,PATCH,DELETE|} \"${2:/path}\" {",
+            "\tbearer ${3:env API_TOKEN}",
+            "\t$0",
+            "}"
+        ],
+        "description": "Send request with bearer token"
+    },
+    "Import: File": {
+        "prefix": "importbad",
+        "body": [
+            "import \"${1:./shared.bad}\""
+        ],
+        "description": "Import a BAD source file"
+    },
+    "Use: File": {
+        "prefix": "usebad",
+        "body": [
+            "use \"${1:./shared.bad}\""
+        ],
+        "description": "Use definitions from another BAD file"
+    },
+    "Import: Alias": {
+        "prefix": "importalias",
+        "body": [
+            "import \"${1:./shared.bad}\" as ${2:shared}"
+        ],
+        "description": "Import file with alias"
+    },
+    "Use: Alias": {
+        "prefix": "usealias",
+        "body": [
+            "use \"${1:./shared.bad}\" as ${2:shared}"
+        ],
+        "description": "Use file with alias"
+    },
+    "Import: Only Request": {
+        "prefix": "importonlyreq",
+        "body": [
+            "import \"${1:./shared.bad}\" only req ${2:request_name}"
+        ],
+        "description": "Import only one request"
+    },
+    "Import: Only Group": {
+        "prefix": "importonlygroup",
+        "body": [
+            "import \"${1:./suite.bad}\" only group \"${2:group_name}\""
+        ],
+        "description": "Import only one group"
+    },
+    "Import: Only Template": {
+        "prefix": "importonlytpl",
+        "body": [
+            "import \"${1:./templates.bad}\" only template ${2:template_name}"
+        ],
+        "description": "Import only one template"
+    },
+    "Expect: Status Exact": {
+        "prefix": "expstatus",
+        "body": [
+            "expect status ${1:200}"
+        ],
+        "description": "Assert exact status code"
+    },
+    "Expect: Status Comparator": {
+        "prefix": "expstatusop",
+        "body": [
+            "expect status ${1|==,!=,<,<=,>,>=|} ${2:200}"
+        ],
+        "description": "Assert status using comparator"
+    },
+    "Expect: Status In List": {
+        "prefix": "expstatusin",
+        "body": [
+            "expect status in [${1:200}, ${2:201}]"
+        ],
+        "description": "Assert status in allowed list"
+    },
+    "Expect: JSON Exists": {
+        "prefix": "expjsonexists",
+        "body": [
+            "expect json.${1:path.to.field} exists"
+        ],
+        "description": "Assert JSON path exists"
+    },
+    "Expect: JSON Equals": {
+        "prefix": "expjsoneq",
+        "body": [
+            "expect json.${1:path.to.field} == ${2:\"value\"}"
+        ],
+        "description": "Assert JSON value equals expected"
+    },
+    "Expect: JSON Contains": {
+        "prefix": "expjsoncontains",
+        "body": [
+            "expect json.${1:path.to.field} contains \"${2:value}\""
+        ],
+        "description": "Assert JSON string contains value"
+    },
+    "Expect: JSON Starts With": {
+        "prefix": "expjsonstarts",
+        "body": [
+            "expect json.${1:path.to.field} starts_with \"${2:prefix}\""
+        ],
+        "description": "Assert JSON string prefix"
+    },
+    "Expect: JSON Ends With": {
+        "prefix": "expjsonends",
+        "body": [
+            "expect json.${1:path.to.field} ends_with \"${2:suffix}\""
+        ],
+        "description": "Assert JSON string suffix"
+    },
+    "Expect: JSON Regex": {
+        "prefix": "expjsonregex",
+        "body": [
+            "expect json.${1:path.to.field} regex \"${2:^pattern$}\""
+        ],
+        "description": "Assert JSON value with regex"
+    },
+    "Expect: Time Under": {
+        "prefix": "exptime",
+        "body": [
+            "expect time_ms < ${1:500}"
+        ],
+        "description": "Assert response duration"
+    },
+    "Assert: Status": {
+        "prefix": "aststatus",
+        "body": [
+            "assert status ${1:200}"
+        ],
+        "description": "Alias assertion for status"
+    },
+    "Assert: JSON Exists": {
+        "prefix": "astjson",
+        "body": [
+            "assert json.${1:path.to.field} exists"
+        ],
+        "description": "Alias assertion for JSON path"
+    },
+    "Assert: Time Under": {
+        "prefix": "asttime",
+        "body": [
+            "assert time_ms < ${1:500}"
+        ],
+        "description": "Alias assertion for response duration"
+    },
+    "Guard: skip_if": {
+        "prefix": "skipsafe",
+        "body": [
+            "skip_if ${1:status != 200} because \"${2:temporary issue}\""
+        ],
+        "description": "Skip flow when condition is true"
+    },
+    "Guard: fail_if": {
+        "prefix": "failsafe",
+        "body": [
+            "fail_if ${1:status >= 500} because \"${2:server error}\""
+        ],
+        "description": "Fail flow when condition is true"
+    },
+    "Guard: Runtime Soft Errors": {
+        "prefix": "guardsoft",
+        "body": [
+            "fail_if stats.runtime.soft_errors > ${1:0} because \"${2:runtime issue}\""
+        ],
+        "description": "Fail on runtime soft errors"
+    },
+    "Assertions: Batch": {
+        "prefix": "assertbatch",
+        "body": [
+            "expect status ${1:200}",
+            "expect json.${2:data.id} exists",
+            "expect time_ms < ${3:800}",
+            "$0"
+        ],
+        "description": "Insert common assertion bundle"
+    },
+    "Expect: Success Family": {
+        "prefix": "exp2xx",
+        "body": [
+            "expect status >= 200",
+            "expect status < 300",
+            "$0"
+        ],
+        "description": "Assert status is in 2xx family"
+    },
+    "Let: From JSON": {
+        "prefix": "letjson",
+        "body": [
+            "let ${1:var_name} = json.${2:path.to.field}"
+        ],
+        "description": "Assign value from response JSON"
+    },
+    "Let: From Status": {
+        "prefix": "letstatus",
+        "body": [
+            "let ${1:last_status} = status"
+        ],
+        "description": "Assign last response status"
+    },
+    "Let: From time_ms": {
+        "prefix": "lettimems",
+        "body": [
+            "let ${1:latency_ms} = time_ms"
+        ],
+        "description": "Assign last response duration"
+    },
+    "Let: From Named Timer": {
+        "prefix": "lettimer",
+        "body": [
+            "let ${1:elapsed_ms} = time ${2:flow_name}"
+        ],
+        "description": "Assign elapsed time from named timer"
+    },
+    "Let: From env": {
+        "prefix": "letenv",
+        "body": [
+            "let ${1:value} = env ${2:API_KEY}"
+        ],
+        "description": "Assign environment variable"
+    },
+    "Let: From args": {
+        "prefix": "letarg",
+        "body": [
+            "let ${1:value} = args ${2:0}"
+        ],
+        "description": "Assign CLI argument"
+    },
+    "Let: From stats": {
+        "prefix": "letstats",
+        "body": [
+            "let ${1:count} = stats.${2:requests.total}"
+        ],
+        "description": "Assign runtime statistics selector"
+    },
+    "Let: now_ms": {
+        "prefix": "letnow",
+        "body": [
+            "let ${1:ts} = now_ms"
+        ],
+        "description": "Assign current epoch timestamp"
+    },
+    "Print: Value": {
+        "prefix": "printval",
+        "body": [
+            "print ${1:value}"
+        ],
+        "description": "Print any expression"
+    },
+    "Print: Status": {
+        "prefix": "printstatus",
+        "body": [
+            "print status"
+        ],
+        "description": "Print current status"
+    },
+    "Print: JSON Path": {
+        "prefix": "printjson",
+        "body": [
+            "print json.${1:path.to.field}"
+        ],
+        "description": "Print JSON path value"
+    },
+    "Print: Stats Total": {
+        "prefix": "printstats",
+        "body": [
+            "print stats.requests.total"
+        ],
+        "description": "Print total request count"
+    },
+    "Timer: Start": {
+        "prefix": "timerstart",
+        "body": [
+            "time_start ${1:flow_name}"
+        ],
+        "description": "Start named timer"
+    },
+    "Timer: Stop": {
+        "prefix": "timerstop",
+        "body": [
+            "time_stop ${1:flow_name}"
+        ],
+        "description": "Stop named timer"
+    },
+    "Option: base": {
+        "prefix": "optbase",
+        "body": [
+            "base = \"${1:https://api.example.com}\""
+        ],
+        "description": "Set base URL"
+    },
+    "Option: timeout": {
+        "prefix": "opttimeout",
+        "body": [
+            "timeout = ${1:10000}"
+        ],
+        "description": "Set default timeout in ms"
+    },
+    "Option: wait": {
+        "prefix": "optwait",
+        "body": [
+            "wait = ${1:0}"
+        ],
+        "description": "Set wait between requests"
+    },
+    "Option: retry_count": {
+        "prefix": "optretrycount",
+        "body": [
+            "retry_count = ${1:0}"
+        ],
+        "description": "Set default retry count"
+    },
+    "Option: retry_delay_ms": {
+        "prefix": "optretrydelay",
+        "body": [
+            "retry_delay_ms = ${1:200}"
+        ],
+        "description": "Set retry delay"
+    },
+    "Option: retry_backoff": {
+        "prefix": "optretrybackoff",
+        "body": [
+            "retry_backoff = ${1:2}"
+        ],
+        "description": "Set retry backoff factor"
+    },
+    "Option: retry_jitter_ms": {
+        "prefix": "optretryjitter",
+        "body": [
+            "retry_jitter_ms = ${1:100}"
+        ],
+        "description": "Set retry jitter in ms"
+    },
+    "Option: save_history": {
+        "prefix": "optsavehistory",
+        "body": [
+            "save_history = ${1|true,false|}"
+        ],
+        "description": "Enable or disable history saving"
+    },
+    "Option: save_steps": {
+        "prefix": "optsavesteps",
+        "body": [
+            "save_steps = ${1|true,false|}"
+        ],
+        "description": "Enable or disable step history"
+    },
+    "Option: print_request": {
+        "prefix": "optprintreq",
+        "body": [
+            "print_request = ${1|true,false|}"
+        ],
+        "description": "Enable request logging"
+    },
+    "Option: print_response": {
+        "prefix": "optprintresp",
+        "body": [
+            "print_response = ${1|true,false|}"
+        ],
+        "description": "Enable response logging"
+    },
+    "Option: show_time": {
+        "prefix": "optshowtime",
+        "body": [
+            "show_time = ${1|true,false|}"
+        ],
+        "description": "Enable request timing output"
+    },
+    "Option: show_timestamp": {
+        "prefix": "optshowts",
+        "body": [
+            "show_timestamp = ${1|true,false|}"
+        ],
+        "description": "Enable timestamp output"
+    },
+    "Option: json_view": {
+        "prefix": "optjsonview",
+        "body": [
+            "json_view = ${1|true,false|}"
+        ],
+        "description": "Enable structured JSON output"
+    },
+    "Option: json_pretty": {
+        "prefix": "optjsonpretty",
+        "body": [
+            "json_pretty = ${1|true,false|}"
+        ],
+        "description": "Enable pretty JSON output"
+    },
+    "Option: flat": {
+        "prefix": "optflat",
+        "body": [
+            "flat = ${1|true,false|}"
+        ],
+        "description": "Enable flat output mode"
+    },
+    "Option: table": {
+        "prefix": "opttable",
+        "body": [
+            "table = ${1|true,false|}"
+        ],
+        "description": "Enable table output mode"
+    },
+    "Option: fail_fast": {
+        "prefix": "optfailfast",
+        "body": [
+            "fail_fast = ${1|true,false|}"
+        ],
+        "description": "Stop on first failure"
+    },
+    "Option: strict_runtime_errors": {
+        "prefix": "optstrict",
+        "body": [
+            "strict_runtime_errors = ${1|true,false|}"
+        ],
+        "description": "Treat runtime soft errors as failures"
+    },
+    "Option: strict_runtime": {
+        "prefix": "optstrictruntime",
+        "body": [
+            "strict_runtime = ${1|true,false|}"
+        ],
+        "description": "Legacy alias for strict runtime mode"
+    },
+    "Option: remember_token": {
+        "prefix": "optremember",
+        "body": [
+            "remember_token = ${1|true,false|}"
+        ],
+        "description": "Auto-capture and reuse auth token"
+    },
+    "Option: use_color": {
+        "prefix": "optcolor",
+        "body": [
+            "use_color = ${1|true,false|}"
+        ],
+        "description": "Enable or disable color output"
+    },
+    "Option: history_dir": {
+        "prefix": "opthistorydir",
+        "body": [
+            "history_dir = \"${1:.bad-history}\""
+        ],
+        "description": "Set history directory"
+    },
+    "Option: history_file": {
+        "prefix": "opthistoryfile",
+        "body": [
+            "history_file = \"${1:.bad-history/all-runs.jsonl}\""
+        ],
+        "description": "Set history output file"
+    },
+    "Option: history_format": {
+        "prefix": "opthistoryformat",
+        "body": [
+            "history_format = \"${1:jsonl}\""
+        ],
+        "description": "Set history format"
+    },
+    "Option: history_mode": {
+        "prefix": "opthistorymode",
+        "body": [
+            "history_mode = \"${1|all,per-file,per-test,off|}\""
+        ],
+        "description": "Set history write mode"
+    },
+    "Option: history_methods": {
+        "prefix": "opthistorymethods",
+        "body": [
+            "history_methods = \"${1:GET,POST}\""
+        ],
+        "description": "Allow-list methods saved to history"
+    },
+    "Option: history_exclude_methods": {
+        "prefix": "opthistoryexclude",
+        "body": [
+            "history_exclude_methods = \"${1:DELETE}\""
+        ],
+        "description": "Exclude methods from history"
+    },
+    "Option: history_only_failed": {
+        "prefix": "opthistoryfailed",
+        "body": [
+            "history_only_failed = ${1|true,false|}"
+        ],
+        "description": "Save history only for failed tests"
+    },
+    "Option: history_include_headers": {
+        "prefix": "opthistoryheaders",
+        "body": [
+            "history_include_headers = ${1|true,false|}"
+        ],
+        "description": "Include headers in saved history records"
+    },
+    "Option: history_include_request_body": {
+        "prefix": "opthistoryreqbody",
+        "body": [
+            "history_include_request_body = ${1|true,false|}"
+        ],
+        "description": "Include request body in saved history records"
+    },
+    "Option: history_include_response_body": {
+        "prefix": "opthistoryrespbody",
+        "body": [
+            "history_include_response_body = ${1|true,false|}"
+        ],
+        "description": "Include response body in saved history records"
+    },
+    "Option: history_max_body_bytes": {
+        "prefix": "opthistorymaxbody",
+        "body": [
+            "history_max_body_bytes = ${1:0}"
+        ],
+        "description": "Limit stored body bytes in history (0 is unlimited)"
+    },
+    "Option: save_mode": {
+        "prefix": "optsavemode",
+        "body": [
+            "save_mode = \"${1|all,per-file,per-test,off|}\""
+        ],
+        "description": "Legacy alias for history_mode"
+    },
+    "Option: save_methods": {
+        "prefix": "optsavemethods",
+        "body": [
+            "save_methods = \"${1:GET,POST}\""
+        ],
+        "description": "Legacy alias for history_methods"
+    },
+    "Option: save_exclude_methods": {
+        "prefix": "optsaveexclude",
+        "body": [
+            "save_exclude_methods = \"${1:DELETE}\""
+        ],
+        "description": "Legacy alias for history_exclude_methods"
+    },
+    "Option: save_only_failed": {
+        "prefix": "optsavefailed",
+        "body": [
+            "save_only_failed = ${1|true,false|}"
+        ],
+        "description": "Legacy alias for history_only_failed"
+    },
+    "Option: save_headers": {
+        "prefix": "optsaveheaders",
+        "body": [
+            "save_headers = ${1|true,false|}"
+        ],
+        "description": "Legacy alias for history_include_headers"
+    },
+    "Option: save_request_body": {
+        "prefix": "optsavereqbody",
+        "body": [
+            "save_request_body = ${1|true,false|}"
+        ],
+        "description": "Legacy alias for history_include_request_body"
+    },
+    "Option: save_response_body": {
+        "prefix": "optsaverespbody",
+        "body": [
+            "save_response_body = ${1|true,false|}"
+        ],
+        "description": "Legacy alias for history_include_response_body"
+    },
+    "Option: save_max_body_bytes": {
+        "prefix": "optsavemaxbody",
+        "body": [
+            "save_max_body_bytes = ${1:0}"
+        ],
+        "description": "Legacy alias for history_max_body_bytes"
+    },
+    "Option: log_level": {
+        "prefix": "optlog",
+        "body": [
+            "log_level = \"${1|error,info,debug|}\""
+        ],
+        "description": "Set runtime log verbosity"
+    },
+    "Option: only_req": {
+        "prefix": "optonlyreq",
+        "body": [
+            "only_req = \"${1:request_name}\""
+        ],
+        "description": "Run only a specific request template"
+    },
+    "Option: only_import": {
+        "prefix": "optonlyimport",
+        "body": [
+            "only_import = \"${1:module_alias}\""
+        ],
+        "description": "Restrict imported scope by alias"
+    },
+    "Option: body_merge": {
+        "prefix": "optbodymerge",
+        "body": [
+            "body_merge = ${1|true,false|}"
+        ],
+        "description": "Enable body merge mode"
+    },
+    "Option: merge_body": {
+        "prefix": "optmergebody",
+        "body": [
+            "merge_body = ${1|true,false|}"
+        ],
+        "description": "Alias option for body_merge"
+    },
+    "Stats: requests.total": {
+        "prefix": "srtotal",
+        "body": [
+            "stats.requests.total"
+        ],
+        "description": "Insert stats selector for total requests"
+    },
+    "Stats: requests.failed": {
+        "prefix": "srfailed",
+        "body": [
+            "stats.requests.failed"
+        ],
+        "description": "Insert stats selector for failed requests"
+    },
+    "Stats: requests.avg_time_ms": {
+        "prefix": "sravg",
+        "body": [
+            "stats.requests.avg_time_ms"
+        ],
+        "description": "Insert average request time selector"
+    },
+    "Stats: assertions.passed": {
+        "prefix": "sapassed",
+        "body": [
+            "stats.assertions.passed"
+        ],
+        "description": "Insert assertions passed selector"
+    },
+    "Stats: assertions.failed": {
+        "prefix": "safailed",
+        "body": [
+            "stats.assertions.failed"
+        ],
+        "description": "Insert assertions failed selector"
+    },
+    "Stats: runtime.soft_errors": {
+        "prefix": "srsoft",
+        "body": [
+            "stats.runtime.soft_errors"
+        ],
+        "description": "Insert runtime soft errors selector"
+    },
+    "Stats: runtime.skipped_tests": {
+        "prefix": "srskipped",
+        "body": [
+            "stats.runtime.skipped_tests"
+        ],
+        "description": "Insert skipped tests selector"
+    },
+    "Stats: timers.count": {
+        "prefix": "stcount",
+        "body": [
+            "stats.timers.count"
+        ],
+        "description": "Insert timer count selector"
+    },
+    "Scenario: Smoke Health": {
+        "prefix": "scnsmoke",
+        "body": [
+            "test \"${1:health endpoint}\" {",
+            "\tsend GET \"${2:/health}\"",
+            "\texpect status 200",
+            "\texpect time_ms < ${3:300}",
+            "\t$0",
+            "}"
+        ],
+        "description": "Quick smoke test scenario"
+    },
+    "Scenario: Auth Login": {
+        "prefix": "scnauth",
+        "body": [
+            "test \"${1:login succeeds}\" {",
+            "\tsend POST \"${2:/auth/login}\" {",
+            "\t\tbody {",
+            "\t\t\temail: \"${3:user@example.com}\"",
+            "\t\t\tpassword: \"${4:secret}\"",
+            "\t\t}",
+            "\t}",
+            "\texpect status 200",
+            "\texpect json.${5:token} exists",
+            "\t$0",
+            "}"
+        ],
+        "description": "Authentication test scenario"
+    },
+    "Scenario: CRUD Flow": {
+        "prefix": "scncrud",
+        "body": [
+            "group \"${1:crud flow}\" {",
+            "\ttest \"create\" {",
+            "\t\tsend POST \"${2:/items}\" {",
+            "\t\t\tbody { ${3:name}: \"${4:value}\" }",
+            "\t\t}",
+            "\t\texpect status 201",
+            "\t}",
+            "",
+            "\ttest \"list\" {",
+            "\t\tsend GET \"${2:/items}\"",
+            "\t\texpect status 200",
+            "\t}",
+            "",
+            "\ttest \"delete\" {",
+            "\t\tsend DELETE \"${2:/items}/${5:id}\"",
+            "\t\texpect status ${6:204}",
+            "\t}",
+            "\t$0",
+            "}"
+        ],
+        "description": "Create/list/delete end-to-end flow"
+    },
+    "Scenario: Retry Network": {
+        "prefix": "scnretry",
+        "body": [
+            "test \"${1:retry transient failures}\" {",
+            "\tsend GET \"${2:/flaky}\" {",
+            "\t\tretry ${3:3}",
+            "\t\tretry_delay_ms ${4:250}",
+            "\t\tretry_backoff ${5:2}",
+            "\t\tretry_jitter_ms ${6:100}",
+            "\t}",
+            "\texpect status 200",
+            "\t$0",
+            "}"
+        ],
+        "description": "Network retry scenario"
+    },
+    "Scenario: Rate Limit": {
+        "prefix": "scnratelimit",
+        "body": [
+            "test \"${1:rate limit response}\" {",
+            "\tsend GET \"${2:/rate-limited}\"",
+            "\texpect status ${3:429}",
+            "\texpect json.${4:error} contains \"${5:rate}\"",
+            "\t$0",
+            "}"
+        ],
+        "description": "Validate 429 and error shape"
+    },
+    "Scenario: Pagination": {
+        "prefix": "scnpaging",
+        "body": [
+            "test \"${1:pagination returns next cursor}\" {",
+            "\tsend GET \"${2:/items?page=1&limit=20}\"",
+            "\texpect status 200",
+            "\texpect json.${3:data} exists",
+            "\texpect json.${4:next_cursor} exists",
+            "\t$0",
+            "}"
+        ],
+        "description": "Pagination response scenario"
+    },
+    "Scenario: Error Hooks": {
+        "prefix": "scnhooks",
+        "body": [
+            "on_error {",
+            "\tprint \"error captured\"",
+            "\tprint stats.runtime.soft_errors",
+            "}",
+            "",
+            "on_assertion_error {",
+            "\tprint stats.assertions.failed",
+            "}",
+            "",
+            "on_network_error {",
+            "\tprint stats.requests.network_failures",
+            "}",
+            "",
+            "$0"
+        ],
+        "description": "Common error hooks bundle"
+    },
+    "Scenario: URL Hooks": {
+        "prefix": "scnurlhooks",
+        "body": [
+            "before_url \"${1:/api/*}\" {",
+            "\ttime_start ${2:api_call}",
+            "}",
+            "",
+            "after_url \"${1:/api/*}\" {",
+            "\ttime_stop ${2:api_call}",
+            "\tprint time ${2:api_call}",
+            "}",
+            "",
+            "on_url_error \"${1:/api/*}\" {",
+            "\tprint \"api call failed\"",
+            "}",
+            "",
+            "$0"
+        ],
+        "description": "URL lifecycle hooks bundle"
+    },
+    "badrc: Baseline": {
+        "prefix": "badrcbase",
+        "body": [
+            "{",
+            "  \"base_url\": \"${1:https://api.example.com}\",",
+            "  \"timeout\": ${2:10000},",
+            "  \"save_history\": true,",
+            "  \"save_steps\": true,",
+            "  \"print_request\": false,",
+            "  \"print_response\": false,",
+            "  \"json_pretty\": true,",
+            "  \"strict_runtime_errors\": false,",
+            "  \"log_level\": \"info\"",
+            "}"
+        ],
+        "description": "Baseline .badrc JSON config"
+    },
+    "badrc: Strict": {
+        "prefix": "badrcstrict",
+        "body": [
+            "{",
+            "  \"base_url\": \"${1:https://api.example.com}\",",
+            "  \"timeout\": ${2:10000},",
+            "  \"save_history\": true,",
+            "  \"save_steps\": true,",
+            "  \"print_request\": true,",
+            "  \"print_response\": true,",
+            "  \"json_pretty\": true,",
+            "  \"fail_fast\": true,",
+            "  \"strict_runtime_errors\": true,",
+            "  \"log_level\": \"debug\"",
+            "}"
+        ],
+        "description": "Strict .badrc JSON config"
+    }
+}

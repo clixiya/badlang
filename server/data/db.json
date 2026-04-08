@@ -1,0 +1,161 @@
+{
+  "schema_version": 2,
+  "counters": {
+    "posts": 3,
+    "users": 1,
+    "logs": 10
+  },
+  "users": [
+    {
+      "id": 1,
+      "name": "clixiya",
+      "email": "clixiya@example.com",
+      "address": {
+        "city": "Mumbai",
+        "geo": {
+          "lat": "19.0760",
+          "lng": "72.8777"
+        }
+      },
+      "company": {
+        "name": "Bad Labs",
+        "catchPhrase": "Ship tests fast"
+      },
+      "createdAt": "2026-04-04T07:31:40.820Z",
+      "updatedAt": "2026-04-04T07:31:40.820Z"
+    }
+  ],
+  "posts": [
+    {
+      "id": 2,
+      "title": "bad language",
+      "body": "api testing",
+      "userId": 1,
+      "createdAt": "2026-04-04T07:31:40.820Z",
+      "updatedAt": "2026-04-04T07:31:40.820Z"
+    },
+    {
+      "id": 3,
+      "title": "hello bad",
+      "body": "testing the bad language",
+      "userId": 1,
+      "createdAt": "2026-04-04T07:33:26.866Z",
+      "updatedAt": "2026-04-04T07:33:26.866Z"
+    }
+  ],
+  "logs": [
+    {
+      "id": 1,
+      "timestamp": "2026-04-04T07:33:26.856Z",
+      "method": "GET",
+      "path": "/posts/1",
+      "status": 200,
+      "durationMs": 9,
+      "requestBody": null,
+      "userAgent": ""
+    },
+    {
+      "id": 2,
+      "timestamp": "2026-04-04T07:33:26.866Z",
+      "method": "POST",
+      "path": "/posts",
+      "status": 201,
+      "durationMs": 1,
+      "requestBody": {
+        "title": "hello bad",
+        "body": "testing the bad language",
+        "userId": 1
+      },
+      "userAgent": ""
+    },
+    {
+      "id": 3,
+      "timestamp": "2026-04-04T07:33:26.868Z",
+      "method": "GET",
+      "path": "/users/1",
+      "status": 200,
+      "durationMs": 1,
+      "requestBody": null,
+      "userAgent": ""
+    },
+    {
+      "id": 4,
+      "timestamp": "2026-04-04T07:33:26.868Z",
+      "method": "GET",
+      "path": "/posts/1",
+      "status": 200,
+      "durationMs": 0,
+      "requestBody": null,
+      "userAgent": ""
+    },
+    {
+      "id": 5,
+      "timestamp": "2026-04-04T07:33:26.869Z",
+      "method": "GET",
+      "path": "/users/1",
+      "status": 200,
+      "durationMs": 0,
+      "requestBody": null,
+      "userAgent": ""
+    },
+    {
+      "id": 6,
+      "timestamp": "2026-04-04T07:33:26.870Z",
+      "method": "GET",
+      "path": "/posts",
+      "status": 200,
+      "durationMs": 0,
+      "requestBody": null,
+      "userAgent": ""
+    },
+    {
+      "id": 7,
+      "timestamp": "2026-04-04T07:33:26.871Z",
+      "method": "PUT",
+      "path": "/posts/1",
+      "status": 200,
+      "durationMs": 0,
+      "requestBody": {
+        "id": 1,
+        "title": "updated title",
+        "body": "updated content",
+        "userId": 1
+      },
+      "userAgent": ""
+    },
+    {
+      "id": 8,
+      "timestamp": "2026-04-04T07:33:26.872Z",
+      "method": "DELETE",
+      "path": "/posts/1",
+      "status": 200,
+      "durationMs": 0,
+      "requestBody": null,
+      "userAgent": ""
+    },
+    {
+      "id": 9,
+      "timestamp": "2026-04-07T14:41:15.640Z",
+      "method": "POST",
+      "path": "/playground/run",
+      "status": 500,
+      "durationMs": 440,
+      "requestBody": {
+        "codeBytes": 924
+      },
+      "userAgent": "node"
+    },
+    {
+      "id": 10,
+      "timestamp": "2026-04-07T14:45:24.676Z",
+      "method": "POST",
+      "path": "/playground/run",
+      "status": 200,
+      "durationMs": 2454,
+      "requestBody": {
+        "codeBytes": 924
+      },
+      "userAgent": "node"
+    }
+  ]
+}

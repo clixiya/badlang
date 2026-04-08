@@ -1,0 +1,23 @@
+# Build outputs - never commit pre-built binaries
+bad
+bad.exe
+dist/
+
+# macOS junk
+.DS_Store
+__MACOSX/
+._*
+
+# Bad history / runtime state
+.bad-history/
+
+# VS Code
+.vscode/
+
+# Node.js
+node_modules/
+npm/vendor/
+*.tgz
+
+# Emscripten / WASM build output
+web/dist/

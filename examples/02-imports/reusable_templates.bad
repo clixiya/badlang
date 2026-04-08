@@ -1,0 +1,34 @@
+# File: reusable_templates.bad
+# Author: clixiya
+# Purpose: Export reusable paths and request templates for other suites.
+# Flow:
+# - Define exported path variables.
+# - Define exported request templates.
+# - Run one local smoke test.
+# Features:
+# - export let
+# - export request
+# - import-ready template design
+
+base_url = "https://jsonplaceholder.typicode.com"
+
+export let profile_path = "/users/1"
+export let todo_path = "/todos/1"
+
+export request load_profile {
+  method GET
+  path profile_path
+  expect status 200
+}
+
+export request load_todo {
+  method GET
+  path todo_path
+  expect status 200
+}
+
+test "export templates smoke" {
+  send req load_profile
+  expect status 200
+  expect json.id == 1
+}

@@ -1,0 +1,141 @@
+name: Cross-Platform Smoke CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  linux-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcurl4-openssl-dev
+      - name: Build bad
+        run: make clean && make
+      - name: Smoke tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_with_retry() {
+            local label="$1"; shift
+            for attempt in 1 2 3; do
+              if "$@"; then return 0; fi
+              echo "${label} failed on attempt ${attempt}"
+              [ "$attempt" -eq 3 ] && return 2
+            done
+          }
+          run_with_retry "benchmark smoke" ./bad examples/04-runtime/benchmark_baseline.bad --no-color --strict-runtime-errors
+          run_with_retry "demo smoke"      ./bad examples/01-basics/quick_start_demo.bad  --no-color --strict-runtime-errors
+
+  macos-smoke:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build bad
+        run: make clean && make
+      - name: Smoke tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_with_retry() {
+            local label="$1"; shift
+            for attempt in 1 2 3; do
+              if "$@"; then return 0; fi
+              echo "${label} failed on attempt ${attempt}"
+              [ "$attempt" -eq 3 ] && return 2
+            done
+          }
+          run_with_retry "benchmark smoke" ./bad examples/04-runtime/benchmark_baseline.bad --no-color --strict-runtime-errors
+          run_with_retry "demo smoke"      ./bad examples/01-basics/quick_start_demo.bad  --no-color --strict-runtime-errors
+
+  windows-x64-smoke:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup MSYS2 (UCRT64)
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            make
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-curl
+      - name: Build bad.exe
+        shell: msys2 {0}
+        run: make clean && make CC=gcc
+      - name: Smoke tests
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          run_with_retry() {
+            local label="$1"; shift
+            for attempt in 1 2 3; do
+              if "$@"; then return 0; fi
+              echo "${label} failed on attempt ${attempt}"
+              [ "$attempt" -eq 3 ] && return 2
+            done
+          }
+          run_with_retry "help smoke" ./bad.exe --help
+          TMP_FILE="$(mktemp)"
+          cat > "$TMP_FILE" <<'EOF'
+          test "offline parser/runtime smoke" {
+            let name = "offline"
+            print name
+          }
+          EOF
+          run_with_retry "offline runtime smoke" ./bad.exe "$TMP_FILE" --no-color --strict-runtime-errors
+          rm -f "$TMP_FILE"
+
+  windows-arm64-smoke:
+    # Native ARM64 runner — CLANGARM64 tools are ARM64 binaries and
+    # cannot execute on x64 (windows-latest) runners.
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify ARM64 runner
+        shell: pwsh
+        run: |
+          $arch = $env:PROCESSOR_ARCHITECTURE
+          Write-Host "Runner PROCESSOR_ARCHITECTURE=$arch"
+          if ($arch -ne 'ARM64') {
+            throw "Expected ARM64 runner for CLANGARM64 smoke tests, got $arch"
+          }
+      - name: Setup MSYS2 (CLANGARM64)
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANGARM64
+          update: true
+          install: >-
+            make
+            mingw-w64-clang-aarch64-clang
+            mingw-w64-clang-aarch64-curl
+      - name: Build bad.exe
+        shell: msys2 {0}
+        run: make clean && make CC=clang
+      - name: Smoke tests
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          run_with_retry() {
+            local label="$1"; shift
+            for attempt in 1 2 3; do
+              if "$@"; then return 0; fi
+              echo "${label} failed on attempt ${attempt}"
+              [ "$attempt" -eq 3 ] && return 2
+            done
+          }
+          run_with_retry "help smoke" ./bad.exe --help
+          TMP_FILE="$(mktemp)"
+          cat > "$TMP_FILE" <<'EOF'
+          test "offline parser/runtime smoke" {
+            let name = "offline"
+            print name
+          }
+          EOF
+          run_with_retry "offline runtime smoke" ./bad.exe "$TMP_FILE" --no-color --strict-runtime-errors
+          rm -f "$TMP_FILE"
