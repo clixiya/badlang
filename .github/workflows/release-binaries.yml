@@ -198,7 +198,7 @@ jobs:
               }
             }
           '
-          PATH="$(pwd)/dist:/usr/bin:/bin" ./dist/bad-win32-x64.exe --help >/dev/null
+          ./dist/bad-win32-x64.exe --help >/dev/null
       - uses: actions/upload-artifact@v4
         with:
           name: binaries-win32-x64
@@ -311,7 +311,7 @@ jobs:
               }
             }
           '
-          PATH="$(pwd)/dist:/usr/bin:/bin" ./dist/bad-win32-arm64.exe --help >/dev/null
+          ./dist/bad-win32-arm64.exe --help >/dev/null
       - uses: actions/upload-artifact@v4
         with:
           name: binaries-win32-arm64
