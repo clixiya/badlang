@@ -31,19 +31,13 @@ jobs:
       - name: Build Linux x64 binary
         run: |
           set -euo pipefail
-          make clean && make CURL_STATIC=1 EXTRA_LDFLAGS='-static-libgcc'
+          make clean && make
           mkdir -p dist
           cp bad dist/bad-linux-x64
           chmod +x dist/bad-linux-x64
       - name: Verify
         run: |
           file dist/bad-linux-x64
-          deps="$(ldd dist/bad-linux-x64 || true)"
-          echo "$deps"
-          if echo "$deps" | grep -q 'libcurl.so'; then
-            echo 'error: bad-linux-x64 still depends on libcurl.so at runtime'
-            exit 1
-          fi
           ./dist/bad-linux-x64 --help >/dev/null
       - uses: actions/upload-artifact@v4
         with:
@@ -63,19 +57,13 @@ jobs:
       - name: Build Linux arm64 binary
         run: |
           set -euo pipefail
-          make clean && make CURL_STATIC=1 EXTRA_LDFLAGS='-static-libgcc'
+          make clean && make
           mkdir -p dist
           cp bad dist/bad-linux-arm64
           chmod +x dist/bad-linux-arm64
       - name: Verify
         run: |
           file dist/bad-linux-arm64
-          deps="$(ldd dist/bad-linux-arm64 || true)"
-          echo "$deps"
-          if echo "$deps" | grep -q 'libcurl.so'; then
-            echo 'error: bad-linux-arm64 still depends on libcurl.so at runtime'
-            exit 1
-          fi
           ./dist/bad-linux-arm64 --help >/dev/null
       - uses: actions/upload-artifact@v4
         with:
