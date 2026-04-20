@@ -20,11 +20,17 @@ test("resolvePlatform returns expected win32 x64 target", () => {
   const out = resolvePlatform("win32", "x64");
   assert.equal(out.assetName, "bad-win32-x64.exe");
   assert.equal(out.executableName, "bad.exe");
+  assert.equal(out.runtimeManifestAsset, "bad-win32-x64-runtime-manifest.json");
   assert.equal(out.runtimeFiles.length, 2);
   assert.equal(out.runtimeFiles[0].assetName, "bad-win32-x64.exe");
   assert.equal(out.runtimeFiles[0].destinationName, "bad.exe");
   assert.equal(out.runtimeFiles[1].assetName, "bad-win32-x64-libcurl-4.dll");
   assert.equal(out.runtimeFiles[1].destinationName, "libcurl-4.dll");
+});
+
+test("resolvePlatform returns expected win32 arm64 runtime manifest", () => {
+  const out = resolvePlatform("win32", "arm64");
+  assert.equal(out.runtimeManifestAsset, "bad-win32-arm64-runtime-manifest.json");
 });
 
 test("resolvePlatform keeps linux runtime files to executable only", () => {

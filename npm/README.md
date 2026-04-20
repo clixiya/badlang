@@ -35,8 +35,9 @@ bad ./examples/01-basics/quick_start_demo.bad
 - `bad-linux-arm64`
 - `bad-win32-x64.exe`
 - `bad-win32-arm64.exe`
-- `bad-win32-x64-libcurl-4.dll`
-- `bad-win32-arm64-libcurl-4.dll`
+- `bad-win32-x64-runtime-manifest.json`
+- `bad-win32-arm64-runtime-manifest.json`
+- Additional `bad-win32-*-*.dll` assets listed by the runtime manifest files.
 
 ## Environment Variables
 

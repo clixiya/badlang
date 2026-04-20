@@ -8,6 +8,7 @@ const { resolvePlatform, supportedTargets } = require("../lib/platform");
 const { buildDownloadUrl } = require("../lib/github");
 const { VENDOR_DIR, getBinaryPath } = require("../lib/paths");
 const { downloadToFile } = require("../lib/downloader");
+const { resolveRuntimeFiles } = require("../lib/runtime-files");
 const { getRuntimeFailureHint } = require("../lib/runtime-hints");
 
 function info(message) {
@@ -101,15 +102,35 @@ async function main() {
   const token = String(process.env.BAD_GITHUB_TOKEN || "").trim();
   const force = process.env.BAD_FORCE_DOWNLOAD === "1";
 
-  const runtimeFiles =
-    Array.isArray(target.runtimeFiles) && target.runtimeFiles.length
-      ? target.runtimeFiles
-      : [
-          {
-            assetName: target.assetName,
-            destinationName: target.executableName
-          }
-        ];
+  const headers = {};
+  if (token) {
+    headers.Authorization = "Bearer " + token;
+  }
+
+  let runtimeFiles;
+  try {
+    runtimeFiles = await resolveRuntimeFiles(
+      target,
+      {
+        owner,
+        repo,
+        tag,
+        baseUrl
+      },
+      {
+        headers
+      }
+    );
+  } catch (err) {
+    fail(
+      "Failed to resolve BAD runtime assets for " +
+        target.platform +
+        "/" +
+        target.arch +
+        ". " +
+        (err && err.message ? err.message : String(err))
+    );
+  }
 
   const executableRuntimeFile =
     runtimeFiles.find((item) => item.destinationName === target.executableName) || runtimeFiles[0];
@@ -147,11 +168,6 @@ async function main() {
         missingRuntimeFiles.map((item) => item.destinationName).join(", ") +
         "). Re-downloading..."
     );
-  }
-
-  const headers = {};
-  if (token) {
-    headers.Authorization = "Bearer " + token;
   }
 
   for (const runtimeFile of runtimeFiles) {

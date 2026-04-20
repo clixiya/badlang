@@ -81,51 +81,126 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
+          node - <<'NODE'
+          const releaseTag = process.env.RELEASE_TAG;
+          const repository = process.env.GITHUB_REPOSITORY;
+          const token = process.env.GITHUB_TOKEN || "";
 
-          EXPECTED_ASSETS=(
-            bad-darwin-x64
-            bad-darwin-arm64
-            bad-linux-x64
-            bad-linux-arm64
-            bad-win32-x64.exe
-            bad-win32-arm64.exe
-            bad-win32-x64-libcurl-4.dll
-            bad-win32-arm64-libcurl-4.dll
-          )
+          const expectedBaseAssets = [
+            "bad-darwin-x64",
+            "bad-darwin-arm64",
+            "bad-linux-x64",
+            "bad-linux-arm64",
+            "bad-win32-x64.exe",
+            "bad-win32-arm64.exe",
+            "bad-win32-x64-runtime-manifest.json",
+            "bad-win32-arm64-runtime-manifest.json"
+          ];
 
-          release_api="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}"
+          const manifestAssets = [
+            "bad-win32-x64-runtime-manifest.json",
+            "bad-win32-arm64-runtime-manifest.json"
+          ];
 
-          for attempt in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-            response=$(curl -fsSL \
-              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-              -H "Accept: application/vnd.github+json" \
-              "${release_api}") || true
+          const releaseApiUrl = `https://api.github.com/repos/${repository}/releases/tags/${releaseTag}`;
 
-            if [ -z "${response}" ]; then
-              echo "Release metadata not available yet (attempt ${attempt}/15)."
-              sleep 20
-              continue
-            fi
+          function sleep(ms) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+          }
 
-            missing=0
-            for asset in "${EXPECTED_ASSETS[@]}"; do
-              if ! printf '%s' "${response}" | grep -q "\"name\": \"${asset}\""; then
-                echo "Missing release asset: ${asset}"
-                missing=1
-              fi
-            done
+          async function fetchText(url) {
+            const headers = {
+              "Accept": "application/vnd.github+json",
+              "User-Agent": "badlang-release-waiter"
+            };
+            if (token) {
+              headers.Authorization = `Bearer ${token}`;
+            }
 
-            if [ "${missing}" -eq 0 ]; then
-              echo "All required release assets are available for ${RELEASE_TAG}."
-              exit 0
-            fi
+            const response = await fetch(url, {
+              method: "GET",
+              headers,
+              redirect: "follow"
+            });
 
-            echo "Waiting for release assets to finish publishing (attempt ${attempt}/15)..."
-            sleep 20
-          done
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status} from ${url}`);
+            }
 
-          echo "Required release assets were not available in time; refusing npm publish."
-          exit 1
+            return response.text();
+          }
+
+          async function fetchJson(url) {
+            const payload = await fetchText(url);
+            return JSON.parse(payload);
+          }
+
+          for (let attempt = 1; attempt <= 15; attempt += 1) {
+            let release;
+            try {
+              release = await fetchJson(releaseApiUrl);
+            } catch (err) {
+              console.log(
+                `Release metadata not available yet (attempt ${attempt}/15): ` +
+                  (err && err.message ? err.message : String(err))
+              );
+              await sleep(20000);
+              continue;
+            }
+
+            const assets = Array.isArray(release.assets) ? release.assets : [];
+            const assetMap = new Map(assets.map((asset) => [asset.name, asset]));
+
+            const missingBaseAssets = expectedBaseAssets.filter((name) => !assetMap.has(name));
+            if (missingBaseAssets.length > 0) {
+              for (const name of missingBaseAssets) {
+                console.log(`Missing release asset: ${name}`);
+              }
+              console.log(`Waiting for release assets to finish publishing (attempt ${attempt}/15)...`);
+              await sleep(20000);
+              continue;
+            }
+
+            const missingManifestAssets = [];
+            for (const manifestName of manifestAssets) {
+              const manifestAsset = assetMap.get(manifestName);
+              try {
+                const manifest = await fetchJson(manifestAsset.browser_download_url);
+                if (!manifest || !Array.isArray(manifest.runtimeFiles)) {
+                  missingManifestAssets.push(`${manifestName} (invalid runtimeFiles)`);
+                  continue;
+                }
+
+                for (const runtimeFile of manifest.runtimeFiles) {
+                  const runtimeAssetName = runtimeFile && runtimeFile.assetName;
+                  if (!runtimeAssetName || !assetMap.has(runtimeAssetName)) {
+                    missingManifestAssets.push(
+                      `${runtimeAssetName || "(missing assetName)"} (listed by ${manifestName})`
+                    );
+                  }
+                }
+              } catch (err) {
+                missingManifestAssets.push(
+                  `${manifestName} (failed to validate: ${err && err.message ? err.message : String(err)})`
+                );
+              }
+            }
+
+            if (missingManifestAssets.length === 0) {
+              console.log(`All required release assets are available for ${releaseTag}.`);
+              process.exit(0);
+            }
+
+            for (const item of missingManifestAssets) {
+              console.log(`Missing/invalid manifest asset entry: ${item}`);
+            }
+            console.log(`Waiting for release assets to finish publishing (attempt ${attempt}/15)...`);
+            await sleep(20000);
+          }
+
+          console.error("Required release assets were not available in time; refusing npm publish.");
+          process.exit(1);
+          NODE
 
       - name: Check if version already exists on npm
         id: npm_version_check

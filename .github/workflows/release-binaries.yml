@@ -135,18 +135,77 @@ jobs:
           make clean && make CC=gcc
           mkdir -p dist
           cp bad.exe dist/bad-win32-x64.exe
-          cp /ucrt64/bin/libcurl-4.dll dist/bad-win32-x64-libcurl-4.dll
+
+          runtime_root="/ucrt64/bin"
+          asset_prefix="bad-win32-x64-"
+          manifest_path="dist/bad-win32-x64-runtime-manifest.json"
+
+          declare -A seen=()
+          queue=("dist/bad-win32-x64.exe")
+          runtime_names=()
+
+          while [ ${#queue[@]} -gt 0 ]; do
+            file="${queue[0]}"
+            queue=("${queue[@]:1}")
+
+            while IFS= read -r dll_name; do
+              [ -n "$dll_name" ] || continue
+              dll_lc="$(printf '%s' "$dll_name" | tr '[:upper:]' '[:lower:]')"
+              candidate="${runtime_root}/${dll_lc}"
+              if [ -f "$candidate" ] && [ -z "${seen[$dll_lc]+x}" ]; then
+                seen["$dll_lc"]=1
+                runtime_names+=("$dll_lc")
+                queue+=("$candidate")
+              fi
+            done < <(objdump -p "$file" | awk '/DLL Name:/ { print $3 }')
+          done
+
+          if [ ${#runtime_names[@]} -eq 0 ]; then
+            echo "No runtime DLL dependencies were discovered for Windows x64 build."
+            exit 1
+          fi
+
+          for dll_name in "${runtime_names[@]}"; do
+            cp "${runtime_root}/${dll_name}" "dist/${asset_prefix}${dll_name}"
+          done
+
+          node -e '
+            const fs = require("node:fs");
+            const assetPrefix = process.argv[1];
+            const outputPath = process.argv[2];
+            const dllNames = process.argv.slice(3);
+            const payload = {
+              runtimeFiles: dllNames.map((name) => ({
+                assetName: assetPrefix + name,
+                destinationName: name
+              }))
+            };
+            fs.writeFileSync(outputPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
+          ' "$asset_prefix" "$manifest_path" "${runtime_names[@]}"
       - name: Verify
         shell: msys2 {0}
         run: |
-          ./dist/bad-win32-x64.exe --help >/dev/null
-          test -s dist/bad-win32-x64-libcurl-4.dll
+          test -s dist/bad-win32-x64-runtime-manifest.json
+          node -e '
+            const fs = require("node:fs");
+            const manifest = JSON.parse(fs.readFileSync("dist/bad-win32-x64-runtime-manifest.json", "utf8"));
+            if (!Array.isArray(manifest.runtimeFiles) || manifest.runtimeFiles.length === 0) {
+              throw new Error("Windows x64 runtime manifest has no runtimeFiles entries");
+            }
+            for (const file of manifest.runtimeFiles) {
+              if (!fs.existsSync("dist/" + file.assetName)) {
+                throw new Error("Missing bundled runtime asset: " + file.assetName);
+              }
+            }
+          '
+          PATH="$(pwd)/dist:/usr/bin:/bin" ./dist/bad-win32-x64.exe --help >/dev/null
       - uses: actions/upload-artifact@v4
         with:
           name: binaries-win32-x64
           path: |
             dist/bad-win32-x64.exe
-            dist/bad-win32-x64-libcurl-4.dll
+            dist/bad-win32-x64-runtime-manifest.json
+            dist/bad-win32-x64-*.dll
 
   build-windows-arm64:
     # IMPORTANT: must use a native ARM64 runner.
@@ -188,19 +247,78 @@ jobs:
           else
             echo "No output binary found"; ls -la; exit 1
           fi
-          cp /clangarm64/bin/libcurl-4.dll dist/bad-win32-arm64-libcurl-4.dll
+
+          runtime_root="/clangarm64/bin"
+          asset_prefix="bad-win32-arm64-"
+          manifest_path="dist/bad-win32-arm64-runtime-manifest.json"
+
+          declare -A seen=()
+          queue=("dist/bad-win32-arm64.exe")
+          runtime_names=()
+
+          while [ ${#queue[@]} -gt 0 ]; do
+            file="${queue[0]}"
+            queue=("${queue[@]:1}")
+
+            while IFS= read -r dll_name; do
+              [ -n "$dll_name" ] || continue
+              dll_lc="$(printf '%s' "$dll_name" | tr '[:upper:]' '[:lower:]')"
+              candidate="${runtime_root}/${dll_lc}"
+              if [ -f "$candidate" ] && [ -z "${seen[$dll_lc]+x}" ]; then
+                seen["$dll_lc"]=1
+                runtime_names+=("$dll_lc")
+                queue+=("$candidate")
+              fi
+            done < <(objdump -p "$file" | awk '/DLL Name:/ { print $3 }')
+          done
+
+          if [ ${#runtime_names[@]} -eq 0 ]; then
+            echo "No runtime DLL dependencies were discovered for Windows arm64 build."
+            exit 1
+          fi
+
+          for dll_name in "${runtime_names[@]}"; do
+            cp "${runtime_root}/${dll_name}" "dist/${asset_prefix}${dll_name}"
+          done
+
+          node -e '
+            const fs = require("node:fs");
+            const assetPrefix = process.argv[1];
+            const outputPath = process.argv[2];
+            const dllNames = process.argv.slice(3);
+            const payload = {
+              runtimeFiles: dllNames.map((name) => ({
+                assetName: assetPrefix + name,
+                destinationName: name
+              }))
+            };
+            fs.writeFileSync(outputPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
+          ' "$asset_prefix" "$manifest_path" "${runtime_names[@]}"
       - name: Verify
         shell: msys2 {0}
         run: |
           test -s dist/bad-win32-arm64.exe
-          ./dist/bad-win32-arm64.exe --help >/dev/null
-          test -s dist/bad-win32-arm64-libcurl-4.dll
+          test -s dist/bad-win32-arm64-runtime-manifest.json
+          node -e '
+            const fs = require("node:fs");
+            const manifest = JSON.parse(fs.readFileSync("dist/bad-win32-arm64-runtime-manifest.json", "utf8"));
+            if (!Array.isArray(manifest.runtimeFiles) || manifest.runtimeFiles.length === 0) {
+              throw new Error("Windows arm64 runtime manifest has no runtimeFiles entries");
+            }
+            for (const file of manifest.runtimeFiles) {
+              if (!fs.existsSync("dist/" + file.assetName)) {
+                throw new Error("Missing bundled runtime asset: " + file.assetName);
+              }
+            }
+          '
+          PATH="$(pwd)/dist:/usr/bin:/bin" ./dist/bad-win32-arm64.exe --help >/dev/null
       - uses: actions/upload-artifact@v4
         with:
           name: binaries-win32-arm64
           path: |
             dist/bad-win32-arm64.exe
-            dist/bad-win32-arm64-libcurl-4.dll
+            dist/bad-win32-arm64-runtime-manifest.json
+            dist/bad-win32-arm64-*.dll
 
   publish-release:
     needs:
@@ -254,7 +372,9 @@ jobs:
             dist/bad-linux-arm64
             dist/bad-win32-x64.exe
             dist/bad-win32-arm64.exe
-            dist/bad-win32-x64-libcurl-4.dll
-            dist/bad-win32-arm64-libcurl-4.dll
+            dist/bad-win32-x64-runtime-manifest.json
+            dist/bad-win32-arm64-runtime-manifest.json
+            dist/bad-win32-x64-*.dll
+            dist/bad-win32-arm64-*.dll
             dist/checksums.txt
           fail_on_unmatched_files: true

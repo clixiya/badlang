@@ -8,6 +8,7 @@ const { resolvePlatform, supportedTargets } = require("../lib/platform");
 const { getBinaryPath } = require("../lib/paths");
 const { buildDownloadUrl } = require("../lib/github");
 const { downloadToFile } = require("../lib/downloader");
+const { resolveRuntimeFiles } = require("../lib/runtime-files");
 const { getRuntimeFailureHint } = require("../lib/runtime-hints");
 
 function fail(message) {
@@ -43,7 +44,7 @@ async function ensureBinary(binaryPath, options = {}) {
     );
   }
 
-  const runtimeFiles =
+  const fallbackRuntimeFiles =
     Array.isArray(target.runtimeFiles) && target.runtimeFiles.length
       ? target.runtimeFiles
       : [
@@ -53,16 +54,16 @@ async function ensureBinary(binaryPath, options = {}) {
           }
         ];
 
-  const missingRuntimeFiles = runtimeFiles.filter(
+  const fallbackMissingRuntimeFiles = fallbackRuntimeFiles.filter(
     (item) => !fs.existsSync(getBinaryPath(item.destinationName))
   );
 
-  if (binaryExists && missingRuntimeFiles.length === 0) {
+  if (binaryExists && fallbackMissingRuntimeFiles.length === 0) {
     return binaryPath;
   }
 
   if (process.env.BAD_SKIP_DOWNLOAD === "1") {
-    const missing = missingRuntimeFiles.map((item) => item.destinationName).join(", ");
+    const missing = fallbackMissingRuntimeFiles.map((item) => item.destinationName).join(", ");
     fail(
       "BAD binary missing at " +
         binaryPath +
@@ -81,6 +82,39 @@ async function ensureBinary(binaryPath, options = {}) {
   const headers = {};
   if (token) {
     headers.Authorization = "Bearer " + token;
+  }
+
+  let runtimeFiles;
+  try {
+    runtimeFiles = await resolveRuntimeFiles(
+      target,
+      {
+        owner,
+        repo,
+        tag,
+        baseUrl
+      },
+      {
+        headers
+      }
+    );
+  } catch (err) {
+    fail(
+      "Failed to resolve BAD runtime assets for " +
+        target.platform +
+        "/" +
+        target.arch +
+        ". " +
+        (err && err.message ? err.message : String(err))
+    );
+  }
+
+  const missingRuntimeFiles = runtimeFiles.filter(
+    (item) => !fs.existsSync(getBinaryPath(item.destinationName))
+  );
+
+  if (binaryExists && missingRuntimeFiles.length === 0) {
+    return binaryPath;
   }
 
   if (binaryExists && missingRuntimeFiles.length > 0) {
