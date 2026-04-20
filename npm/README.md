@@ -52,6 +52,33 @@ bad ./examples/01-basics/quick_start_demo.bad
 - `BAD_BIN_PATH` (runtime override)
 	- Use a custom local binary path when running `bad`.
 
+## Troubleshooting (Windows/Linux)
+
+If `bad` installs but fails immediately when you run a `.bad` file:
+
+1. Re-download and validate the binary:
+
+```bash
+npx bad-install
+```
+
+2. Upgrade to the latest package version:
+
+```bash
+npm install -g badlang@latest
+```
+
+3. If your machine cannot run the published release binary, build BAD locally and point npm to it:
+
+```bash
+BAD_BIN_PATH=/absolute/path/to/bad bad --help
+```
+
+Common symptoms:
+
+- Windows: process exits with status `3221225781` or reports missing DLLs.
+- Linux: process exits with `126/127` or prints `GLIBC_x.y not found`.
+
 ## Development
 
 ```bash

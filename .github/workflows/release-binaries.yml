@@ -19,7 +19,7 @@ env:
 
 jobs:
   build-linux-x64:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,13 +31,19 @@ jobs:
       - name: Build Linux x64 binary
         run: |
           set -euo pipefail
-          make clean && make
+          make clean && make CURL_STATIC=1 EXTRA_LDFLAGS='-static-libgcc'
           mkdir -p dist
           cp bad dist/bad-linux-x64
           chmod +x dist/bad-linux-x64
       - name: Verify
         run: |
           file dist/bad-linux-x64
+          deps="$(ldd dist/bad-linux-x64 || true)"
+          echo "$deps"
+          if echo "$deps" | grep -q 'libcurl.so'; then
+            echo 'error: bad-linux-x64 still depends on libcurl.so at runtime'
+            exit 1
+          fi
           ./dist/bad-linux-x64 --help >/dev/null
       - uses: actions/upload-artifact@v4
         with:
@@ -57,13 +63,19 @@ jobs:
       - name: Build Linux arm64 binary
         run: |
           set -euo pipefail
-          make clean && make
+          make clean && make CURL_STATIC=1 EXTRA_LDFLAGS='-static-libgcc'
           mkdir -p dist
           cp bad dist/bad-linux-arm64
           chmod +x dist/bad-linux-arm64
       - name: Verify
         run: |
           file dist/bad-linux-arm64
+          deps="$(ldd dist/bad-linux-arm64 || true)"
+          echo "$deps"
+          if echo "$deps" | grep -q 'libcurl.so'; then
+            echo 'error: bad-linux-arm64 still depends on libcurl.so at runtime'
+            exit 1
+          fi
           ./dist/bad-linux-arm64 --help >/dev/null
       - uses: actions/upload-artifact@v4
         with:
@@ -132,12 +144,17 @@ jobs:
         shell: msys2 {0}
         run: |
           set -euo pipefail
-          make clean && make CC=gcc
+          make clean && make CC=gcc CURL_STATIC=1 EXTRA_LDFLAGS='-static -static-libgcc'
           mkdir -p dist
           cp bad.exe dist/bad-win32-x64.exe
       - name: Verify
         shell: msys2 {0}
-        run: ./dist/bad-win32-x64.exe --help >/dev/null
+        run: |
+          ./dist/bad-win32-x64.exe --help >/dev/null
+          if strings dist/bad-win32-x64.exe | grep -qi 'libcurl-4\.dll'; then
+            echo 'error: bad-win32-x64.exe still imports libcurl-4.dll'
+            exit 1
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: binaries-win32-x64
@@ -174,7 +191,7 @@ jobs:
         shell: msys2 {0}
         run: |
           set -euo pipefail
-          make clean && make CC=clang
+          make clean && make CC=clang CURL_STATIC=1 EXTRA_LDFLAGS='-static'
           mkdir -p dist
           if [ -f bad.exe ]; then
             cp bad.exe dist/bad-win32-arm64.exe
@@ -188,6 +205,10 @@ jobs:
         run: |
           test -s dist/bad-win32-arm64.exe
           ./dist/bad-win32-arm64.exe --help >/dev/null
+          if strings dist/bad-win32-arm64.exe | grep -qi 'libcurl-4\.dll'; then
+            echo 'error: bad-win32-arm64.exe still imports libcurl-4.dll'
+            exit 1
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: binaries-win32-arm64

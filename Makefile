@@ -1,13 +1,23 @@
 CC      ?= cc
-CURL_CFLAGS := $(shell curl-config --cflags 2>/dev/null)
-CURL_LIBS   := $(shell curl-config --libs 2>/dev/null)
+CURL_CONFIG ?= curl-config
+CURL_STATIC ?= 0
+EXTRA_CFLAGS ?=
+EXTRA_LDFLAGS ?=
+
+CURL_CFLAGS := $(shell $(CURL_CONFIG) --cflags 2>/dev/null)
+
+ifeq ($(CURL_STATIC),1)
+CURL_LIBS := $(shell $(CURL_CONFIG) --static-libs 2>/dev/null)
+else
+CURL_LIBS := $(shell $(CURL_CONFIG) --libs 2>/dev/null)
+endif
 
 ifeq ($(strip $(CURL_LIBS)),)
 CURL_LIBS := -lcurl
 endif
 
-CFLAGS  := -std=c11 -Wall -Wextra -O2 -Iinclude $(CURL_CFLAGS)
-LDFLAGS := $(CURL_LIBS)
+CFLAGS  := -std=c11 -Wall -Wextra -O2 -Iinclude $(CURL_CFLAGS) $(EXTRA_CFLAGS)
+LDFLAGS := $(CURL_LIBS) $(EXTRA_LDFLAGS)
 
 ifeq ($(OS),Windows_NT)
 TARGET := bad.exe

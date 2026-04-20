@@ -30,6 +30,8 @@ async function downloadToFile(url, destinationPath, options = {}) {
 
   try {
     await pipeline(Readable.fromWeb(response.body), output);
+    // On Windows, fs.rename does not replace an existing file.
+    await fs.promises.rm(destinationPath, { force: true });
     await fs.promises.rename(tmpPath, destinationPath);
   } catch (err) {
     await fs.promises.rm(tmpPath, { force: true });

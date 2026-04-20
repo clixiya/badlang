@@ -8,6 +8,7 @@ const { resolvePlatform, supportedTargets } = require("../lib/platform");
 const { getBinaryPath } = require("../lib/paths");
 const { buildDownloadUrl } = require("../lib/github");
 const { downloadToFile } = require("../lib/downloader");
+const { getRuntimeFailureHint } = require("../lib/runtime-hints");
 
 function fail(message) {
   console.error("[bad] " + message);
@@ -111,10 +112,20 @@ async function main() {
   });
 
   child.on("error", (err) => {
-    fail("Failed to run BAD binary: " + (err && err.message ? err.message : String(err)));
+    const message = "Failed to run BAD binary: " + (err && err.message ? err.message : String(err));
+    const hint = getRuntimeFailureHint(process.platform, {
+      code: err && err.code
+    });
+    fail(hint ? message + ". " + hint : message);
   });
 
   child.on("exit", (code) => {
+    const hint = getRuntimeFailureHint(process.platform, {
+      exitCode: code
+    });
+    if (hint) {
+      console.error("[bad] " + hint);
+    }
     process.exit(code == null ? 1 : code);
   });
 }

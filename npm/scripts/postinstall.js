@@ -3,10 +3,12 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { spawn } = require("node:child_process");
 const { resolvePlatform, supportedTargets } = require("../lib/platform");
 const { buildDownloadUrl } = require("../lib/github");
 const { VENDOR_DIR, getBinaryPath } = require("../lib/paths");
 const { downloadToFile } = require("../lib/downloader");
+const { getRuntimeFailureHint } = require("../lib/runtime-hints");
 
 function info(message) {
   console.log("[bad] " + message);
@@ -15,6 +17,64 @@ function info(message) {
 function fail(message) {
   console.error("[bad] " + message);
   process.exit(1);
+}
+
+function describeFailure(failure) {
+  if (!failure) {
+    return "unknown failure";
+  }
+
+  if (failure.message) {
+    return failure.message;
+  }
+
+  if (failure.signal) {
+    return "terminated by signal " + failure.signal;
+  }
+
+  if (Number.isInteger(failure.exitCode)) {
+    return "exited with code " + failure.exitCode;
+  }
+
+  return "unknown failure";
+}
+
+async function smokeTestBinary(binaryPath) {
+  return new Promise((resolve) => {
+    let settled = false;
+    const child = spawn(binaryPath, ["--help"], {
+      stdio: "ignore",
+      windowsHide: true
+    });
+
+    const finish = (value) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      resolve(value);
+    };
+
+    child.once("error", (err) => {
+      finish({
+        code: err && err.code,
+        message: err && err.message ? err.message : String(err)
+      });
+    });
+
+    child.once("exit", (exitCode, signal) => {
+      if (exitCode === 0) {
+        finish(null);
+        return;
+      }
+
+      finish({
+        exitCode,
+        signal,
+        message: signal ? "terminated by signal " + signal : "exited with code " + exitCode
+      });
+    });
+  });
 }
 
 async function main() {
@@ -52,8 +112,19 @@ async function main() {
   const binaryPath = getBinaryPath(target.executableName);
 
   if (!force && fs.existsSync(binaryPath)) {
-    info("Binary already exists at " + binaryPath + ". Use BAD_FORCE_DOWNLOAD=1 to refresh.");
-    return;
+    const failure = await smokeTestBinary(binaryPath);
+    if (!failure) {
+      info("Binary already exists at " + binaryPath + ". Use BAD_FORCE_DOWNLOAD=1 to refresh.");
+      return;
+    }
+
+    info(
+      "Existing binary failed startup check (" +
+        describeFailure(failure) +
+        "). Re-downloading " +
+        target.assetName +
+        "..."
+    );
   }
 
   const headers = {};
@@ -66,6 +137,20 @@ async function main() {
 
   if (target.platform !== "win32") {
     await fs.promises.chmod(binaryPath, 0o755);
+  }
+
+  const startupFailure = await smokeTestBinary(binaryPath);
+  if (startupFailure) {
+    const hint = getRuntimeFailureHint(target.platform, startupFailure);
+    fail(
+      "Downloaded binary failed startup check (" +
+        describeFailure(startupFailure) +
+        "). " +
+        (hint
+          ? hint + " "
+          : "") +
+        "Set BAD_BIN_PATH to a local build if release binaries are not compatible with this system."
+    );
   }
 
   await fs.promises.mkdir(VENDOR_DIR, { recursive: true });
