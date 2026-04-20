@@ -73,6 +73,60 @@ jobs:
             exit 1
           fi
 
+      - name: Wait for release binary assets
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          EXPECTED_ASSETS=(
+            bad-darwin-x64
+            bad-darwin-arm64
+            bad-linux-x64
+            bad-linux-arm64
+            bad-win32-x64.exe
+            bad-win32-arm64.exe
+            bad-win32-x64-libcurl-4.dll
+            bad-win32-arm64-libcurl-4.dll
+          )
+
+          release_api="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}"
+
+          for attempt in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+            response=$(curl -fsSL \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "${release_api}") || true
+
+            if [ -z "${response}" ]; then
+              echo "Release metadata not available yet (attempt ${attempt}/15)."
+              sleep 20
+              continue
+            fi
+
+            missing=0
+            for asset in "${EXPECTED_ASSETS[@]}"; do
+              if ! printf '%s' "${response}" | grep -q "\"name\": \"${asset}\""; then
+                echo "Missing release asset: ${asset}"
+                missing=1
+              fi
+            done
+
+            if [ "${missing}" -eq 0 ]; then
+              echo "All required release assets are available for ${RELEASE_TAG}."
+              exit 0
+            fi
+
+            echo "Waiting for release assets to finish publishing (attempt ${attempt}/15)..."
+            sleep 20
+          done
+
+          echo "Required release assets were not available in time; refusing npm publish."
+          exit 1
+
       - name: Check if version already exists on npm
         id: npm_version_check
         shell: bash
