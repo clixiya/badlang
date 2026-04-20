@@ -101,17 +101,33 @@ async function main() {
   const token = String(process.env.BAD_GITHUB_TOKEN || "").trim();
   const force = process.env.BAD_FORCE_DOWNLOAD === "1";
 
+  const runtimeFiles =
+    Array.isArray(target.runtimeFiles) && target.runtimeFiles.length
+      ? target.runtimeFiles
+      : [
+          {
+            assetName: target.assetName,
+            destinationName: target.executableName
+          }
+        ];
+
+  const executableRuntimeFile =
+    runtimeFiles.find((item) => item.destinationName === target.executableName) || runtimeFiles[0];
+
   const downloadUrl = buildDownloadUrl({
     owner,
     repo,
     tag,
-    assetName: target.assetName,
+    assetName: executableRuntimeFile.assetName,
     baseUrl
   });
 
   const binaryPath = getBinaryPath(target.executableName);
+  const missingRuntimeFiles = runtimeFiles.filter(
+    (item) => !fs.existsSync(getBinaryPath(item.destinationName))
+  );
 
-  if (!force && fs.existsSync(binaryPath)) {
+  if (!force && fs.existsSync(binaryPath) && missingRuntimeFiles.length === 0) {
     const failure = await smokeTestBinary(binaryPath);
     if (!failure) {
       info("Binary already exists at " + binaryPath + ". Use BAD_FORCE_DOWNLOAD=1 to refresh.");
@@ -125,6 +141,12 @@ async function main() {
         target.assetName +
         "..."
     );
+  } else if (!force && fs.existsSync(binaryPath) && missingRuntimeFiles.length > 0) {
+    info(
+      "Runtime support files missing (" +
+        missingRuntimeFiles.map((item) => item.destinationName).join(", ") +
+        "). Re-downloading..."
+    );
   }
 
   const headers = {};
@@ -132,11 +154,22 @@ async function main() {
     headers.Authorization = "Bearer " + token;
   }
 
-  info("Downloading " + target.assetName + " from GitHub releases...");
-  await downloadToFile(downloadUrl, binaryPath, { headers });
+  for (const runtimeFile of runtimeFiles) {
+    const runtimePath = getBinaryPath(runtimeFile.destinationName);
+    const runtimeDownloadUrl = buildDownloadUrl({
+      owner,
+      repo,
+      tag,
+      assetName: runtimeFile.assetName,
+      baseUrl
+    });
 
-  if (target.platform !== "win32") {
-    await fs.promises.chmod(binaryPath, 0o755);
+    info("Downloading " + runtimeFile.assetName + " from GitHub releases...");
+    await downloadToFile(runtimeDownloadUrl, runtimePath, { headers });
+
+    if (target.platform !== "win32" && runtimeFile.destinationName === target.executableName) {
+      await fs.promises.chmod(runtimePath, 0o755);
+    }
   }
 
   const startupFailure = await smokeTestBinary(binaryPath);
@@ -164,6 +197,7 @@ async function main() {
     arch: target.arch,
     assetName: target.assetName,
     executableName: target.executableName,
+    runtimeFiles,
     installedAt: new Date().toISOString()
   };
   await fs.promises.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n", "utf8");

@@ -144,21 +144,21 @@ jobs:
         shell: msys2 {0}
         run: |
           set -euo pipefail
-          make clean && make CC=gcc CURL_STATIC=1 EXTRA_LDFLAGS='-static -static-libgcc'
+          make clean && make CC=gcc
           mkdir -p dist
           cp bad.exe dist/bad-win32-x64.exe
+          cp /ucrt64/bin/libcurl-4.dll dist/bad-win32-x64-libcurl-4.dll
       - name: Verify
         shell: msys2 {0}
         run: |
           ./dist/bad-win32-x64.exe --help >/dev/null
-          if strings dist/bad-win32-x64.exe | grep -qi 'libcurl-4\.dll'; then
-            echo 'error: bad-win32-x64.exe still imports libcurl-4.dll'
-            exit 1
-          fi
+          test -s dist/bad-win32-x64-libcurl-4.dll
       - uses: actions/upload-artifact@v4
         with:
           name: binaries-win32-x64
-          path: dist/bad-win32-x64.exe
+          path: |
+            dist/bad-win32-x64.exe
+            dist/bad-win32-x64-libcurl-4.dll
 
   build-windows-arm64:
     # IMPORTANT: must use a native ARM64 runner.
@@ -191,7 +191,7 @@ jobs:
         shell: msys2 {0}
         run: |
           set -euo pipefail
-          make clean && make CC=clang CURL_STATIC=1 EXTRA_LDFLAGS='-static'
+          make clean && make CC=clang
           mkdir -p dist
           if [ -f bad.exe ]; then
             cp bad.exe dist/bad-win32-arm64.exe
@@ -200,19 +200,19 @@ jobs:
           else
             echo "No output binary found"; ls -la; exit 1
           fi
+          cp /clangarm64/bin/libcurl-4.dll dist/bad-win32-arm64-libcurl-4.dll
       - name: Verify
         shell: msys2 {0}
         run: |
           test -s dist/bad-win32-arm64.exe
           ./dist/bad-win32-arm64.exe --help >/dev/null
-          if strings dist/bad-win32-arm64.exe | grep -qi 'libcurl-4\.dll'; then
-            echo 'error: bad-win32-arm64.exe still imports libcurl-4.dll'
-            exit 1
-          fi
+          test -s dist/bad-win32-arm64-libcurl-4.dll
       - uses: actions/upload-artifact@v4
         with:
           name: binaries-win32-arm64
-          path: dist/bad-win32-arm64.exe
+          path: |
+            dist/bad-win32-arm64.exe
+            dist/bad-win32-arm64-libcurl-4.dll
 
   publish-release:
     needs:
@@ -266,5 +266,7 @@ jobs:
             dist/bad-linux-arm64
             dist/bad-win32-x64.exe
             dist/bad-win32-arm64.exe
+            dist/bad-win32-x64-libcurl-4.dll
+            dist/bad-win32-arm64-libcurl-4.dll
             dist/checksums.txt
           fail_on_unmatched_files: true

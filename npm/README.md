@@ -35,6 +35,8 @@ bad ./examples/01-basics/quick_start_demo.bad
 - `bad-linux-arm64`
 - `bad-win32-x64.exe`
 - `bad-win32-arm64.exe`
+- `bad-win32-x64-libcurl-4.dll`
+- `bad-win32-arm64-libcurl-4.dll`
 
 ## Environment Variables
 

@@ -24,11 +24,23 @@ const TARGET_MATRIX = Object.freeze({
   win32: Object.freeze({
     x64: Object.freeze({
       assetName: "bad-win32-x64.exe",
-      executableName: "bad.exe"
+      executableName: "bad.exe",
+      companionAssets: Object.freeze([
+        Object.freeze({
+          assetName: "bad-win32-x64-libcurl-4.dll",
+          destinationName: "libcurl-4.dll"
+        })
+      ])
     }),
     arm64: Object.freeze({
       assetName: "bad-win32-arm64.exe",
-      executableName: "bad.exe"
+      executableName: "bad.exe",
+      companionAssets: Object.freeze([
+        Object.freeze({
+          assetName: "bad-win32-arm64-libcurl-4.dll",
+          destinationName: "libcurl-4.dll"
+        })
+      ])
     })
   })
 });
@@ -48,7 +60,14 @@ function resolvePlatform(platform = process.platform, arch = process.arch) {
     platform,
     arch,
     assetName: target.assetName,
-    executableName: target.executableName
+    executableName: target.executableName,
+    runtimeFiles: [
+      {
+        assetName: target.assetName,
+        destinationName: target.executableName
+      },
+      ...(Array.isArray(target.companionAssets) ? target.companionAssets : [])
+    ]
   };
 }
 

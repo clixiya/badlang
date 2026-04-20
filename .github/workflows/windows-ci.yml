@@ -67,15 +67,15 @@ jobs:
             mingw-w64-ucrt-x86_64-curl
       - name: Build bad.exe
         shell: msys2 {0}
-        run: make clean && make CC=gcc CURL_STATIC=1 EXTRA_LDFLAGS='-static -static-libgcc'
-      - name: Validate binary portability
+        run: |
+          set -euo pipefail
+          make clean && make CC=gcc
+          cp /ucrt64/bin/libcurl-4.dll ./libcurl-4.dll
+      - name: Validate runtime bundle
         shell: msys2 {0}
         run: |
           set -euo pipefail
-          if strings bad.exe | grep -qi 'libcurl-4\.dll'; then
-            echo 'error: bad.exe still imports libcurl-4.dll'
-            exit 1
-          fi
+          test -s ./libcurl-4.dll
       - name: Smoke tests
         shell: msys2 {0}
         run: |
@@ -124,15 +124,15 @@ jobs:
             mingw-w64-clang-aarch64-curl
       - name: Build bad.exe
         shell: msys2 {0}
-        run: make clean && make CC=clang CURL_STATIC=1 EXTRA_LDFLAGS='-static'
-      - name: Validate binary portability
+        run: |
+          set -euo pipefail
+          make clean && make CC=clang
+          cp /clangarm64/bin/libcurl-4.dll ./libcurl-4.dll
+      - name: Validate runtime bundle
         shell: msys2 {0}
         run: |
           set -euo pipefail
-          if strings bad.exe | grep -qi 'libcurl-4\.dll'; then
-            echo 'error: bad.exe still imports libcurl-4.dll'
-            exit 1
-          fi
+          test -s ./libcurl-4.dll
       - name: Smoke tests
         shell: msys2 {0}
         run: |

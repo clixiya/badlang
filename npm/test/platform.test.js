@@ -20,6 +20,18 @@ test("resolvePlatform returns expected win32 x64 target", () => {
   const out = resolvePlatform("win32", "x64");
   assert.equal(out.assetName, "bad-win32-x64.exe");
   assert.equal(out.executableName, "bad.exe");
+  assert.equal(out.runtimeFiles.length, 2);
+  assert.equal(out.runtimeFiles[0].assetName, "bad-win32-x64.exe");
+  assert.equal(out.runtimeFiles[0].destinationName, "bad.exe");
+  assert.equal(out.runtimeFiles[1].assetName, "bad-win32-x64-libcurl-4.dll");
+  assert.equal(out.runtimeFiles[1].destinationName, "libcurl-4.dll");
+});
+
+test("resolvePlatform keeps linux runtime files to executable only", () => {
+  const out = resolvePlatform("linux", "x64");
+  assert.equal(out.runtimeFiles.length, 1);
+  assert.equal(out.runtimeFiles[0].assetName, "bad-linux-x64");
+  assert.equal(out.runtimeFiles[0].destinationName, "bad");
 });
 
 test("resolvePlatform throws on unsupported platform", () => {

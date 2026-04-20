@@ -88,6 +88,13 @@ function getPlaygroundAssetName(target) {
   return target.startsWith("win32-") ? `bad-${target}.exe` : `bad-${target}`;
 }
 
+function getPlaygroundCompanionAssets(target) {
+  if (target.startsWith("win32-")) {
+    return [`bad-${target}-libcurl-4.dll`];
+  }
+  return [];
+}
+
 async function downloadReleaseAsset(url, destinationPath) {
   const response = await fetch(url, { redirect: "follow" });
   if (!response.ok || !response.body) {
@@ -121,6 +128,7 @@ async function ensurePlaygroundBinary() {
     const binaryPath = path.join(BAD_PLAYGROUND_RUNTIME_DIR, target, binaryName);
     const versionTag = getVersionTag(BAD_PLAYGROUND_RELEASE_VERSION);
     const assetName = getPlaygroundAssetName(target);
+    const companionAssets = getPlaygroundCompanionAssets(target);
     const downloadUrl = `${BAD_PLAYGROUND_BASE_URL}/${versionTag}/${assetName}`;
     const configuredLocalBinaryPath = BAD_PLAYGROUND_LOCAL_BINARY
       ? path.resolve(BAD_PLAYGROUND_LOCAL_BINARY)
@@ -133,16 +141,35 @@ async function ensurePlaygroundBinary() {
     if (configuredLocalBinaryPath) {
       await fs.promises.copyFile(configuredLocalBinaryPath, binaryPath);
       source = "local-binary";
+      if (companionAssets.length > 0) {
+        const localDir = path.dirname(configuredLocalBinaryPath);
+        const localDllPath = path.join(localDir, "libcurl-4.dll");
+        if (fs.existsSync(localDllPath)) {
+          await fs.promises.copyFile(localDllPath, path.join(path.dirname(binaryPath), "libcurl-4.dll"));
+        }
+      }
       if (process.platform !== "win32") {
         await fs.promises.chmod(binaryPath, 0o755);
       }
     } else if (!fs.existsSync(binaryPath)) {
       try {
         await downloadReleaseAsset(downloadUrl, binaryPath);
+        for (const companionAsset of companionAssets) {
+          const companionUrl = `${BAD_PLAYGROUND_BASE_URL}/${versionTag}/${companionAsset}`;
+          const destinationName = companionAsset.replace(`bad-${target}-`, "");
+          const destinationPath = path.join(path.dirname(binaryPath), destinationName);
+          await downloadReleaseAsset(companionUrl, destinationPath);
+        }
         source = "github-release";
       } catch (downloadError) {
         if (fs.existsSync(BAD_PLAYGROUND_REPO_BINARY)) {
           await fs.promises.copyFile(BAD_PLAYGROUND_REPO_BINARY, binaryPath);
+          if (companionAssets.length > 0) {
+            const repoDllPath = path.join(path.dirname(BAD_PLAYGROUND_REPO_BINARY), "libcurl-4.dll");
+            if (fs.existsSync(repoDllPath)) {
+              await fs.promises.copyFile(repoDllPath, path.join(path.dirname(binaryPath), "libcurl-4.dll"));
+            }
+          }
           source = "repo-local-fallback";
           if (process.platform !== "win32") {
             await fs.promises.chmod(binaryPath, 0o755);
